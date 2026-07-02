@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
+import { useNavigate } from "react-router";
 
 const LogInPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
@@ -11,9 +13,14 @@ const LogInPage = () => {
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser(formData));
+    try {
+      await dispatch(loginUser(formData)).unwrap();
+      navigate("/");
+    } catch (error) {
+      console.log("Login failed", error);
+    }
   };
 
   return (
@@ -25,17 +32,18 @@ const LogInPage = () => {
           <input
             type="email"
             value={formData.email}
+            placeholder="Enter your email"
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
         </div>
-
         <div>
           <label>Password</label>
           <input
             type="password"
             value={formData.password}
+            placeholder="Enter your password"
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
@@ -45,7 +53,7 @@ const LogInPage = () => {
         {error && <p>{error}</p>}
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "Loading..." : "Sign in"}
+          {isLoading ? "Logging in..." : "Sign in"}
         </button>
       </form>
     </div>
