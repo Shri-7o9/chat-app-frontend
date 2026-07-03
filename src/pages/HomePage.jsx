@@ -1,10 +1,9 @@
-
-
-const ChatPage = () => {
+const HomePage = () => {
   return (
     <div>
+      HomePage
     </div>
   )
 }
 
-export default ChatPage
+export default HomePage
