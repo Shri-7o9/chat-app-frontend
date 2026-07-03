@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { useAuthStore } from "../store/useAuthStore"
 import toast from "react-hot-toast"
+import { useDispatch, useSelector } from "react-redux"
+
 
 
 const LogInPage = () => {
@@ -10,9 +11,13 @@ const LogInPage = () => {
     email:"",
     password:"",
   })
-  const {login, isLoggingIn}=useAuthStore()
+  
+  const dispatch=useDispatch()
+  const {isLoggingIn}=useSelector((state)=>state.auth)
+
   const handleSubmit=async(e)=>{
     e.preventDefault()
+
      if(!formData.email||!formData.password){
       return toast.error("All fields are required")
      }
@@ -20,7 +25,8 @@ const LogInPage = () => {
      if(formData.password.length<6){
       return toast.error("Password must be at least 6 characters")
      }
-    login(formData)
+
+    dispatch(login(formData))
   }
   return (
     <>
@@ -51,6 +57,7 @@ const LogInPage = () => {
       </form>
 
     </div>
+    
     <div>
       Create an account?
       <Link to="/signup">Create</Link>
