@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 const LogInPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -24,39 +25,44 @@ const LogInPage = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <>
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={handleSubmit}>
           <label>Email</label>
           <input
             type="email"
-            value={formData.email}
             placeholder="Enter your email"
+            value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
-        </div>
-        <div>
           <label>Password</label>
           <input
-            type="password"
-            value={formData.password}
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
+            value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
           />
-        </div>
+          <button type="button" onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? "Hide" : "Show"}
+          </button>
 
-        {error && <p>{error}</p>}
+          {error && <p>{error}</p>}
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Sign in"}
-        </button>
-      </form>
-    </div>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
+      <div>
+        Create an account?
+        <Link to="/signup">Create</Link>
+      </div>
+    </>
   );
 };
 
