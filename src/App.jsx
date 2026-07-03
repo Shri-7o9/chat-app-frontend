@@ -1,3 +1,4 @@
+import { Navigate, Route, Routes } from "react-router";
 import React,{useEffect} from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
@@ -9,25 +10,21 @@ import SignUpPage from './pages/SignUpPage'
 import { useAuthStore } from './store/useAuthStore'
 
 
-const App = () => {
-  const {checkAuth,isCheckingAuth,authUser}=useAuthStore()
+import HomePage from "./pages/HomePage.jsx";
+import LogInPage from "./pages/LogInPage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
 
-  useEffect(()=>{checkAuth()},[checkAuth])
-
-  if(isCheckingAuth && !authUser){
-    return <div>Loading...</div>
-  }
-
+function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={authUser?<HomePage/>:<Navigate to="/login"/>}/>
-        <Route path="/login" element={!authUser?<LogInPage/>:<Navigate to="/"/>}/>
-        {/*<Route path="/signup" element={!authUser?<SignUp/>:<Navigate to="/"/>}/>*/}
+        <Route path="/" element={<HomePage /> } />
+        <Route path="/login" element={<LogInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
       </Routes>
-      <Toaster/>
-    </div>
-  )
-}
 
-export default App
+      <Toaster />
+    </div>
+  );
+}
+export default App;
