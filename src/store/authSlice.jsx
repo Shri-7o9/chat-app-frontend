@@ -13,6 +13,18 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+export const signupUser = createAsyncThunk(
+  "auth/signupUser",
+  async (formData, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post("/auth/signup", formData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  },
+);
+
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, thunkAPI) => {
@@ -59,6 +71,19 @@ const authSlice = createSlice({
         state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // signup cases
+      .addCase(signupUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(signupUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+      })
+      .addCase(signupUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
