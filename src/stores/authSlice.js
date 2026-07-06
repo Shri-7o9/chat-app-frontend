@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../libs/axios.js";
 import toast from "react-hot-toast";
 
+
+
 export const checkAuth = createAsyncThunk(
   "auth/checkAuth",
   async (_, { rejectWithValue }) => {
@@ -27,7 +29,7 @@ export const login = createAsyncThunk(
     }
   },
 );
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: "auth",
   initialState: {
     authUser: null,
