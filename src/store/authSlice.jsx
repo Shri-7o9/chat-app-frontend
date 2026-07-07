@@ -1,52 +1,76 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../libs/axios.js";
+import toast from "react-hot-toast";
 
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (formData, thunkAPI) => {
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/auth/login", formData);
-      return response.data;
+      const res = await axiosInstance.get("/auth/check");
+      return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      console.log("Error in checkAuth:", error);
+      return rejectWithValue(error.response?.data?.message);
     }
   },
 );
 
-export const signupUser = createAsyncThunk(
-  "auth/signupUser",
-  async (formData, thunkAPI) => {
+export const signup = createAsyncThunk(
+  "auth/signup",
+  async (formData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/auth/signup", formData);
-      return response.data;
+      const res = await axiosInstance.post("/auth/signup", {
+        fullName: formData.fullName,
+        userName: formData.userName,
+        email: formData.email,
+        password: formData.password,
+      });
+      toast.success("Account created successfully");
+      return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
+    }
+  },
+);
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+      toast.success("Logged in successfully");
+      return res.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
     }
   },
 );
 
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
       await axiosInstance.post("/auth/logout");
+      toast.success("Logged out successfully");
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
     }
   },
 );
 
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
-  async (formData, thunkAPI) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(
-        "/auth/update-profile",
-        formData,
-      );
-      return response.data;
+      const res = await axiosInstance.put("/auth/update-profile", data);
+      toast.success("Profile updated successfully");
+      return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
     }
   },
 );
@@ -54,66 +78,89 @@ export const updateProfile = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    isLoading: false,
-    error: null,
+    authUser: null,
+    isSigningUp: false,
+    isLoggingIn: false,
+    isUpdatingProfile: false,
+    isCheckingAuth: true,
+    onlineUsers: [],
+    socket: null,
   },
-  reducers: {},
+  reducers: {
+    setSocket: (state, action) => {
+      state.socket = action.payload;
+    },
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload;
+    },
+    clearAuthError: () => {},
+  },
   extraReducers: (builder) => {
     builder
-      // login cases
-      .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      // checkAuth
+      .addCase(checkAuth.pending, (state) => {
+        state.isCheckingAuth = true;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload.user;
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.authUser = action.payload;
+        state.isCheckingAuth = false;
       })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      // signup cases
-      .addCase(signupUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(signupUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload.user;
-      })
-      .addCase(signupUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      .addCase(checkAuth.rejected, (state) => {
+        state.authUser = null;
+        state.isCheckingAuth = false;
       })
 
-      // logout cases
+      // signup
+      .addCase(signup.pending, (state) => {
+        state.isSigningUp = true;
+      })
+      .addCase(signup.fulfilled, (state, action) => {
+        state.authUser = action.payload;
+        state.isSigningUp = false;
+      })
+      .addCase(signup.rejected, (state) => {
+        state.isSigningUp = false;
+      })
+
+      // login
+      .addCase(login.pending, (state) => {
+        state.isLoggingIn = true;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.authUser = action.payload;
+        state.isLoggingIn = false;
+      })
+      .addCase(login.rejected, (state) => {
+        state.isLoggingIn = false;
+      })
+
+      // logout
       .addCase(logoutUser.pending, (state) => {
-        state.isLoading = true;
+        state.isLoggingIn = true;
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.isLoading = false;
+        state.authUser = null;
+        state.isLoggingIn = false;
+        state.socket = null;
+        state.onlineUsers = [];
       })
       .addCase(logoutUser.rejected, (state) => {
-        state.isLoading = false;
+        state.isLoggingIn = false;
       })
 
-      // update profile cases
+      // updateProfile
       .addCase(updateProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+        state.isUpdatingProfile = true;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload.user;
+        state.authUser = action.payload.user;
+        state.isUpdatingProfile = false;
       })
-      .addCase(updateProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      .addCase(updateProfile.rejected, (state) => {
+        state.isUpdatingProfile = false;
       });
   },
 });
 
+export const { setSocket, setOnlineUsers, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

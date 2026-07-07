@@ -1,23 +1,30 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/authSlice";
-import { useNavigate, Link } from "react-router";
+import { login } from "../store/authSlice";
 
 const LogInPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isLoading, error } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoggingIn } = useSelector((state) => state.auth);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.password) {
+      return toast.error("All fields are required");
+    }
+    if (formData.password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
     try {
-      await dispatch(loginUser(formData)).unwrap();
+      await dispatch(login(formData)).unwrap();
       navigate("/");
     } catch (error) {
       console.log("Login failed", error);
@@ -29,35 +36,49 @@ const LogInPage = () => {
       <div>
         <h1>Login</h1>
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-          <label>Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-          <button type="button" onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? "Hide" : "Show"}
-          </button>
+          {/* Email field */}
+          <div>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />
+          </div>
 
-          {error && <p>{error}</p>}
+          {/* Password field */}
+          <div>
+            <label htmlFor="password">Password</label>
+            <div>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
+          {/* Submit button */}
+          <button type="submit" disabled={isLoggingIn}>
+            {isLoggingIn ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
+
       <div>
         Create an account?
         <Link to="/signup">Create</Link>

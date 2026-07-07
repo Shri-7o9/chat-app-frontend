@@ -2,27 +2,25 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 import { logoutUser } from "../store/authSlice";
+import { User } from "lucide-react";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { authUser, isLoggingIn } = useSelector((state) => state.auth);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
   const dropdownRef = useRef(null);
 
-  // close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -41,32 +39,35 @@ const Navbar = () => {
   return (
     <>
       <nav>
-        {/* Logo — always visible */}
-        <Link to={user ? "/" : "/login"}>ChatApp</Link>
+        {/* Logo */}
+        <Link to={authUser ? "/" : "/login"}>ChatApp</Link>
 
-        {/* logged out — show login and signup links */}
-        {!user && (
+        {/* logged out */}
+        {!authUser && (
           <div>
             <Link to="/login">Login</Link>
             <Link to="/signup">Sign Up</Link>
           </div>
         )}
 
-        {/* logged in — show settings dropdown */}
-        {user && (
+        {/* logged in */}
+        {authUser && (
           <div ref={dropdownRef}>
-            {/* Settings icon button */}
+            {/* username with icon */}
+            <div>
+              <User size={18} />
+              <span>{authUser.fullName}</span>
+            </div>
+
+            {/* settings button */}
             <button onClick={() => setShowDropdown(!showDropdown)}>⚙️</button>
 
-            {/* Dropdown */}
+            {/* dropdown */}
             {showDropdown && (
               <div>
-                {/* Update Profile option */}
                 <Link to="/profile" onClick={() => setShowDropdown(false)}>
                   Update Profile
                 </Link>
-
-                {/* Logout option */}
                 <button
                   onClick={() => {
                     setShowDropdown(false);
@@ -81,14 +82,21 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Logout Confirmation Popup  */}
+      {/* Logout Confirmation Popup */}
       {showPopup && (
         <div>
           <div>
             <p>Are you sure you want to logout?</p>
             <div>
-              <button onClick={() => setShowPopup(false)}>No</button>
-              <button onClick={handleLogout}>Yes</button>
+              <button
+                onClick={() => setShowPopup(false)}
+                disabled={isLoggingIn}
+              >
+                No
+              </button>
+              <button onClick={handleLogout} disabled={isLoggingIn}>
+                {isLoggingIn ? "Logging out..." : "Yes"}
+              </button>
             </div>
           </div>
         </div>

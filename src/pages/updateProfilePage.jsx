@@ -6,7 +6,7 @@ import { updateProfile } from "../store/authSlice";
 const UpdateProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, error } = useSelector((state) => state.auth);
+  const { isUpdatingProfile } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,7 +17,7 @@ const UpdateProfilePage = () => {
     e.preventDefault();
     try {
       await dispatch(updateProfile(formData)).unwrap();
-      navigate("/settings");
+      navigate("/");
     } catch (error) {
       console.log("Update failed", error);
     }
@@ -39,7 +39,6 @@ const UpdateProfilePage = () => {
             }
           />
         </div>
-
         <div>
           <label>Username</label>
           <input
@@ -52,14 +51,12 @@ const UpdateProfilePage = () => {
           />
         </div>
 
-        {error && <p>{error}</p>}
-
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save Changes"}
+        <button type="submit" disabled={isUpdatingProfile}>
+          {isUpdatingProfile ? "Saving..." : "Save Changes"}
         </button>
       </form>
 
-      <button onClick={() => navigate("/settings")}>Back to Settings</button>
+      <button onClick={() => navigate("/")}>Back</button>
     </div>
   );
 };
