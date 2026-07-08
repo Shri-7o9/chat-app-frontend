@@ -40,7 +40,7 @@ const Navbar = () => {
     <>
       <nav>
         {/* Logo */}
-        <Link to={authUser ? "/" : "/login"}>ChatApp</Link>
+        <Link to={authUser ? "/chat" : "/login"}>ChatApp</Link>
 
         {/* logged out */}
         {!authUser && (

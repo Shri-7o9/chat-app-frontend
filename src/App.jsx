@@ -1,40 +1,43 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
-import { checkAuth } from "./store/authSlice";
-import LogInPage from "./pages/LogInPage";
-import SignUpPage from "./pages/SignUpPage";
 import UpdateProfilePage from "./pages/updateProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
 const App = () => {
-  const dispatch = useDispatch();
-  const { isCheckingAuth, authUser } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
-
-  if (isCheckingAuth) {
-    return <div>Loading...</div>;
-  }
+  const { authUser } = useSelector((state) => state.auth);
 
   return (
     <BrowserRouter>
       <Toaster />
       <Navbar />
       <Routes>
-        {/* default route  */}
+        {/* default redirect */}
         <Route
           path="/"
           element={
             authUser ? <Navigate to="/chat" /> : <Navigate to="/login" />
           }
         />
-        <Route path="/login" element={<LogInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
+
+        {/* auth pages */}
+        <Route path="/login" element={<div>Login Page</div>} />
+        <Route path="/signup" element={<div>Signup Page</div>} />
+
+        {/* verify email page */}
+        <Route
+          path="/verify-email/:token"
+          element={<div>Verify Email Page</div>}
+        />
+
+        {/* reset password page*/}
+        <Route
+          path="/reset-password/:token"
+          element={<div>Reset Password Page</div>}
+        />
+
+        {/* protected routes */}
         <Route
           path="/profile"
           element={
@@ -43,7 +46,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        {/* chat page route */}
+
+        {/* chat page */}
         <Route
           path="/chat"
           element={

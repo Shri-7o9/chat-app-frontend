@@ -9,15 +9,15 @@ const UpdateProfilePage = () => {
   const { isUpdatingProfile } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    userName: "",
+    firstName: "",
+    lastName: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await dispatch(updateProfile(formData)).unwrap();
-      navigate("/");
+      navigate("/chat");
     } catch (error) {
       console.log("Update failed", error);
     }
@@ -29,24 +29,25 @@ const UpdateProfilePage = () => {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Full Name</label>
+          <label>First Name</label>
           <input
             type="text"
-            placeholder="Enter your full name"
-            value={formData.fullName}
+            placeholder="Enter your first name"
+            value={formData.firstName}
             onChange={(e) =>
-              setFormData({ ...formData, fullName: e.target.value })
+              setFormData({ ...formData, firstName: e.target.value })
             }
           />
         </div>
+
         <div>
-          <label>Username</label>
+          <label>Last Name</label>
           <input
             type="text"
-            placeholder="Enter your username"
-            value={formData.userName}
+            placeholder="Enter your last name"
+            value={formData.lastName}
             onChange={(e) =>
-              setFormData({ ...formData, userName: e.target.value })
+              setFormData({ ...formData, lastName: e.target.value })
             }
           />
         </div>
@@ -56,7 +57,7 @@ const UpdateProfilePage = () => {
         </button>
       </form>
 
-      <button onClick={() => navigate("/")}>Back</button>
+      <button onClick={() => navigate("/chat")}>Back</button>
     </div>
   );
 };
