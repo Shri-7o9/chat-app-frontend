@@ -2,18 +2,20 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
-import { login } from "../stores/authSlice";
+import { forgetPassword, login } from "../stores/authSlice";
 
 
 const LogInPage = () => {
   const [showPassword, setShowPassword]= useState(false)
+  const [showForgetPassword, setShowForgetPassword]=useState(false)
+  const [resetEmail,setResetEmail]=useState("")
   const [formData,setFormData]= useState({
     email:"",
     password:"",
   })
   
   const dispatch=useDispatch()
-  const {isLoggingIn}=useSelector((state)=>state.auth)
+  const {isLoggingIn,isSendingResetLink}=useSelector((state)=>state.auth)
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
@@ -28,6 +30,38 @@ const LogInPage = () => {
 
     dispatch(login(formData))
   }
+  const handleForgetPassword=(e)=>{
+    e.preventDefault()
+    if(!resetEmail){
+      return toast.error("please enter your email")
+    }
+    dispatch(forgetPassword(resetEmail))
+    setResetEmail("")
+  }
+
+  if(showForgetPassword){
+    return(
+      <div>
+        <h1>Reset Password</h1>
+        <form onSubmit={handleForgetPassword}>
+          <label>Email</label>
+          <input 
+          type="email"
+          placeholder="Enter your email"
+          value={resetEmail}
+          onChange={(e)=>setResetEmail(e.target.value)}
+          />
+          <button type="submit" disabled={isSendingResetLink}>
+            {isSendingResetLink?"Sending...":"Send Reset Link"}
+          </button>
+          <button type="button" onClick={()=>setShowForgetPassword(false)}>
+            Back to Login
+          </button>
+        </form>
+      </div>
+    )
+  }
+  
   return (
     <>
     <div>
@@ -52,6 +86,9 @@ const LogInPage = () => {
         </button>
         <button type="submit" disabled={isLoggingIn}>
           {isLoggingIn?"Logging in...":"Login"}
+        </button>
+        <button type="button" onClick={()=>setShowForgetPassword(true)}>
+          Forget Password?
         </button>
 
       </form>

@@ -29,6 +29,22 @@ export const login = createAsyncThunk(
     }
   },
 );
+
+export const forgetPassword=createAsyncThunk("auth/forgetPassword",
+  async(email,{rejectWithValue})=>{
+    try{
+      const res=await axiosInstance.post("/auth/forgetPassword",{email})
+      toast.success("Password reset link sent to your email")
+      return res.data
+      
+    }catch(error){
+      const message=error.response?.data?.message||"something went wrong"
+      toast.error(message)
+      return rejectWithValue(message)
+    }
+  }
+
+)
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -36,6 +52,7 @@ export const authSlice = createSlice({
     isSigniniUp: false,
     isLoggingIn: false,
     isUpadatingProfile: false,
+    isSendingResetLink:false,
 
     isCheckingAuth: true,
     onlineUser: [],
@@ -64,6 +81,15 @@ export const authSlice = createSlice({
       })
       .addCase(login.rejected, (state) => {
         state.isLoggingIn = false;
+      })
+      .addCase(forgetPassword.pending, (state) => {
+        state.isSendingResetLink = true;
+      })
+      .addCase(forgetPassword.fulfilled, (state, action) => {
+        state.isSendingResetLink = false;
+      })
+      .addCase(forgetPassword.rejected, (state) => {
+        state.isSendingResetLink = false;
       });
   },
 });
