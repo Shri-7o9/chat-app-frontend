@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
 import { signup } from "../store/authSlice.js";
@@ -10,8 +10,8 @@ const SignUpPage = () => {
   const isSigningUp = useSelector((state) => state.auth.isSigningUp);
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    userName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -31,12 +31,12 @@ const SignUpPage = () => {
   const validate = () => {
     const errors = {};
 
-    if (!formData.fullName.trim()) {
-      errors.fullName = "Full name is required";
+    if (!formData.firstName.trim()) {
+      errors.firstName = "Full name is required";
     }
 
-    if (!formData.userName.trim()) {
-      errors.userName = "User name is required";
+    if (!formData.lastName.trim()) {
+      errors.lastName = "User name is required";
     }
 
     if (!formData.email.trim()) {
@@ -85,27 +85,27 @@ const SignUpPage = () => {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="fullName">Full Name</label>
+          <label htmlFor="firstName">Full Name</label>
           <input
             type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
             onChange={handleChange}
           />
-          {formErrors.fullName && <p>{formErrors.fullName}</p>}
+          {formErrors.firstName && <p>{formErrors.firstName}</p>}
         </div>
 
         <div>
-          <label htmlFor="userName">User Name</label>
+          <label htmlFor="lastName">User Name</label>
           <input
             type="text"
-            id="userName"
-            name="userName"
-            value={formData.userName}
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
             onChange={handleChange}
           />
-          {formErrors.userName && <p>{formErrors.userName}</p>}
+          {formErrors.lastName && <p>{formErrors.lastName}</p>}
         </div>
 
         <div>

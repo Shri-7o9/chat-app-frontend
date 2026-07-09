@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../lib/axios.js";
-
-
 export const checkAuth = createAsyncThunk(
   "auth/checkAuth",
   async (_, { rejectWithValue }) => {
@@ -16,15 +14,13 @@ export const checkAuth = createAsyncThunk(
     }
   },
 );
-
-
 export const signup = createAsyncThunk(
   "auth/signup",
   async (formData, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post("/auth/signup", {
-        fullName: formData.fullName,
-        userName: formData.userName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
       });
@@ -37,7 +33,6 @@ export const signup = createAsyncThunk(
     }
   },
 );
-
 const initialState = {
   authUser: null,
   isSigningUp: false,
@@ -47,7 +42,6 @@ const initialState = {
   onlineUsers: [],
   socket: null,
 };
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -80,7 +74,6 @@ const authSlice = createSlice({
         state.authUser = null;
         state.isCheckingAuth = false;
       })
-
       // signup
       .addCase(signup.pending, (state) => {
         state.isSigningUp = true;
@@ -94,8 +87,6 @@ const authSlice = createSlice({
       });
   },
 });
-
 export const { setSocket, setOnlineUsers, logout, clearAuthError } =
   authSlice.actions;
-
 export default authSlice.reducer;
