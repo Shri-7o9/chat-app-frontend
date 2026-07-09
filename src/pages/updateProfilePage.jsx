@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { updateProfile } from "../store/authSlice";
+import { updateProfile } from "../stores/authSlice";
 
 const UpdateProfilePage = () => {
   const dispatch = useDispatch();
