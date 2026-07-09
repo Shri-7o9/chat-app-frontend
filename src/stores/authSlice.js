@@ -10,10 +10,31 @@ export const checkAuth = createAsyncThunk(
       return res.data;
     } catch (error) {
       console.log("Error in checkAuth:", error);
-      return rejectWithValue(error.response?.data?.message);
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
     }
   },
 );
+
+export const signup = createAsyncThunk(
+  "auth/signup",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/auth/signup", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+      return res.data;
+    } catch (error) {
+      console.log("Error in signup:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Something went wrong",
+      );
+    }
+  },
+);
+
 export const login = createAsyncThunk(
   "auth/login",
   async (data, { rejectWithValue }) => {
@@ -63,16 +84,33 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: {
     authUser: null,
-    isSigniniUp: false,
+    isSigningUp: false,
     isLoggingIn: false,
-    isUpadatingProfile: false,
-    isSendingResetLink: false,
-
     isCheckingAuth: true,
-    onlineUser: [],
+
+    onlineUsers: [],
     socket: null,
+    isSendingResetLink: false,
   },
-  reducers: {},
+
+  reducers: {
+
+    setSocket: (state, action) => {
+      state.socket = action.payload;
+    },
+
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload;
+    },
+    
+    logout: (state) => {
+      state.authUser = null;
+      state.socket = null;
+      state.onlineUsers = [];
+    },
+    clearAuthError: () => {},
+
+  },
   extraReducers: (builder) => {
     builder
       .addCase(checkAuth.pending, (state) => {
@@ -86,6 +124,7 @@ export const authSlice = createSlice({
         state.authUser = null;
         state.isCheckingAuth = false;
       })
+      
       .addCase(login.pending, (state) => {
         state.isLoggingIn = true;
       })
@@ -93,9 +132,25 @@ export const authSlice = createSlice({
         state.authUser = action.payload;
         state.isLoggingIn = false;
       })
+
       .addCase(login.rejected, (state) => {
         state.isLoggingIn = false;
       })
+
+      // signup
+      .addCase(signup.pending, (state) => {
+        state.isSigningUp = true;
+      })
+
+      .addCase(signup.fulfilled, (state, action) => {
+        state.authUser = action.payload;
+        state.isSigningUp = false;
+      })
+
+      .addCase(signup.rejected, (state) => {
+        state.isSigningUp = false;
+      })
+
       .addCase(forgetPassword.pending, (state) => {
         state.isSendingResetLink = true;
       })
@@ -107,5 +162,8 @@ export const authSlice = createSlice({
       });
   },
 });
+
+export const { setSocket, setOnlineUsers, logout, clearAuthError } =
+  authSlice.actions;
 
 export default authSlice.reducer;

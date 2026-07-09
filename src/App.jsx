@@ -29,8 +29,9 @@ const App=()=> {
         <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
       </Routes>
 
-      <Toaster />
+      <Toaster/>
     </div>
   );
 }
 export default App;
+
