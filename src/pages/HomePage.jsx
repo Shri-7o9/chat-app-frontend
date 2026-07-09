@@ -1,7 +1,11 @@
 const HomePage = () => {
   return (
     <div>
+<<<<<<< HEAD
        HomePage
+=======
+       HopePage
+>>>>>>> develop
     </div>
   )
 }

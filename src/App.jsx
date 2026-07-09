@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import { Toast } from "react-hot-toast";
 
 import HomePage from "./pages/HomePage.jsx";
-import LogInPage from "./pages/LogInPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 
 function App() {
@@ -10,12 +10,12 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LogInPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
       </Routes>
-
-      <Toaster />
+      <Toast />
     </div>
   );
 }
+
 export default App;
