@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import { forgetPassword, login } from "../stores/authSlice";
