@@ -2,8 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../libs/axios.js";
 import toast from "react-hot-toast";
 
-
-
 export const checkAuth = createAsyncThunk(
   "auth/checkAuth",
   async (_, { rejectWithValue }) => {
@@ -30,21 +28,37 @@ export const login = createAsyncThunk(
   },
 );
 
-export const forgetPassword=createAsyncThunk("auth/forgetPassword",
-  async(email,{rejectWithValue})=>{
-    try{
-      const res=await axiosInstance.post("/auth/forgetPassword",{email})
-      toast.success("Password reset link sent to your email")
-      return res.data
-      
-    }catch(error){
-      const message=error.response?.data?.message||"something went wrong"
-      toast.error(message)
-      return rejectWithValue(message)
+export const forgetPassword = createAsyncThunk(
+  "auth/forgetPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/auth/forgetPassword", { email });
+      toast.success("Password reset link sent to your email");
+      return res.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "something went wrong";
+      toast.error(message);
+      return rejectWithValue(message);
     }
-  }
+  },
+);
 
-)
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(`/auth/reset-password/${token}`, {
+        newPassword,
+      });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Something went wrong",
+      );
+    }
+  },
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -52,7 +66,7 @@ export const authSlice = createSlice({
     isSigniniUp: false,
     isLoggingIn: false,
     isUpadatingProfile: false,
-    isSendingResetLink:false,
+    isSendingResetLink: false,
 
     isCheckingAuth: true,
     onlineUser: [],

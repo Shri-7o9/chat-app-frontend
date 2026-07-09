@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import HomePage from "./pages/HomePage"
 import LogInPage from './pages/LogInPage'
 import SignUpPage from './pages/SignUpPage'
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { useDispatch, useSelector } from 'react-redux'
 import { checkAuth } from './stores/authSlice'
 
@@ -25,6 +26,7 @@ const App=()=> {
         <Route path="/" element={authUser?<HomePage />:<Navigate to="/login" />} />
         <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
         {/*<Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />*/}
+        <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
       </Routes>
 
       <Toaster />
