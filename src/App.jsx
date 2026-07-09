@@ -1,43 +1,45 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { checkAuth } from "./store/authSlice";
 import UpdateProfilePage from "./pages/updateProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
 const App = () => {
-  const { authUser } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  if (isCheckingAuth) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <BrowserRouter>
       <Toaster />
       <Navbar />
       <Routes>
-        {/* default redirect */}
         <Route
           path="/"
           element={
             authUser ? <Navigate to="/chat" /> : <Navigate to="/login" />
           }
         />
-
-        {/* auth pages */}
         <Route path="/login" element={<div>Login Page</div>} />
         <Route path="/signup" element={<div>Signup Page</div>} />
-
-        {/* verify email page */}
         <Route
           path="/verify-email/:token"
           element={<div>Verify Email Page</div>}
         />
-
-        {/* reset password page*/}
         <Route
           path="/reset-password/:token"
           element={<div>Reset Password Page</div>}
         />
-
-        {/* protected routes */}
         <Route
           path="/profile"
           element={
@@ -46,8 +48,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* chat page */}
         <Route
           path="/chat"
           element={
