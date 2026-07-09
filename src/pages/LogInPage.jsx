@@ -6,4 +6,4 @@ const LogInPage = () => {
   )
 }
 
-export default LogInPage
+export default LogInPage;
