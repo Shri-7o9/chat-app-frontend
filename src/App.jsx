@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 import HomePage from "./pages/HomePage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
@@ -16,7 +16,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
       </Routes>
 
-      <Toast/>
+      <Toaster/>
     </div>
   );
 }
