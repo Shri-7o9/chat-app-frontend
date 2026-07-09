@@ -1,9 +1,5 @@
 const LogInPage = () => {
-  return (
-    <div>
-        LogInPage
-    </div>
-  )
-}
+  return <div>LogInPage</div>;
+};
 
-export default LogInPage
+export default LogInPage;

@@ -81,14 +81,7 @@ const SignUpPage = () => {
 
   return (
     <div>
-<<<<<<< HEAD
-      <h1>Sign Up</h1>
-=======
-      SignupPage
-    </div>
-  )
-}
->>>>>>> develop
+
 
       <form onSubmit={handleSubmit}>
         <div>
