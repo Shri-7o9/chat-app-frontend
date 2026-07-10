@@ -17,11 +17,13 @@ const formatTime=(dataString)=>{
 
 const ChatContainer=()=>{
     const dispatch=useDispatch()
-    const {selectedUser,messages,isMessagesLoading}=useSelector((state)=>state.chat)
-    const {authUser}=useSelector((state)=>state.auth)
+    const {selectedUser,messages,isMessagesLoading, isTyping}=useSelector((state)=>state.chat)
+    const {authUser, onlineUsers}=useSelector((state)=>state.auth)
 
     const [text,setText]=useState("")
     const messageEndRef=useRef(null)
+
+    const isOnline= onlineUsers.includes(selectedUser?._id)
 
     useEffect(()=>{
         if(selectedUser?._id){
@@ -53,13 +55,8 @@ const ChatContainer=()=>{
     return(
         <>
             <div>
-                <img src={authUser?.profilePic||"/avatar-placeholder.png"} alt="me"/>
-                <span>{authUser?.fullName}</span>
-            </div>
-
-            <div>
                 <h2>{selectedUser.fullName}</h2>
-                <p>Active</p>
+                <p>{isOnline ? "Active":"Offline"}</p>
             </div>
 
             <div>
@@ -93,11 +90,15 @@ const ChatContainer=()=>{
                      )
                 })}
 
-                <div>
-                    <img src={selectedUser.profilePic||"/avatar-placeholder.png"} alt=""/>
-                    {selectedUser.fullName} is typing
-                </div>
+                {isTyping && (
+                    <div>
+                        <img src={selectedUser.profilePic||"/avatar-placeholder.png"} alt=""/>
+                        {selectedUser.fullName} is typing
+                    </div>
 
+                )}
+
+                
                 <div ref={messageEndRef}/>
             </div>
 

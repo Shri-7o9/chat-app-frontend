@@ -1,8 +1,10 @@
 import { useState } from "react"
-import { Link } from "react-router"
+import { Link, Navigate } from "react-router"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import { forgetPassword, login } from "../stores/authSlice";
+import { Eye, EyeOff } from "lucide-react";
+
 
 
 const LogInPage = () => {
@@ -69,27 +71,34 @@ const LogInPage = () => {
       <form onSubmit={handleSubmit}>
         <label>Email</label>
         <input
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e)=>setFormData({...formData,email:e.target.value})}
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e)=>setFormData({...formData,email:e.target.value})}
         />
+
+        <div>
         <label>Password</label>
         <input
-        type={showPassword?"text":"password"}
-        placeholder="Password"
-        value={formData.password}
-        onChange={(e)=>setFormData({...formData,password:e.target.value})}
+          type={showPassword?"text":"password"}
+          placeholder="Password"
+          value={formData.password}
+          onChange={(e)=>setFormData({...formData,password:e.target.value})}
         />
         <button type="button" onClick={()=>setShowPassword(!showPassword)}>
-          {showPassword?"Hide":"Show"}
+          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
-        <button type="submit" disabled={isLoggingIn}>
-          {isLoggingIn?"Logging in...":"Login"}
-        </button>
-        <button type="button" onClick={()=>setShowForgetPassword(true)}>
-          Forget Password?
-        </button>
+      </div>
+        <div>
+          <button type="submit" disabled={isLoggingIn}>
+            {isLoggingIn?"Logging in...":"Login"}
+          </button>
+        </div>
+        <div>
+          <button type="button" onClick={()=>setShowForgetPassword(true)}>
+            Forget Password?
+          </button>
+        </div>
 
       </form>
 

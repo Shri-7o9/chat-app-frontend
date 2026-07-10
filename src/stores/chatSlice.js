@@ -53,6 +53,7 @@ const chatSlice = createSlice({
     selectedUser: null,
     isUsersLoading: false,
     isMessagesLoading: false,
+    isTyping: false,
   },
   reducers: {
     setSelectedUser: (state, action) => {
@@ -61,6 +62,9 @@ const chatSlice = createSlice({
     },
     addMessage: (state, action) => {
       state.messages.push(action.payload);
+    },
+    setIsTyping: (state, action) => {
+      state.isTyping = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -92,5 +96,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setSelectedUser, addMessage } = chatSlice.actions;
+export const { setSelectedUser, addMessage, setIsTyping } = chatSlice.actions;
 export default chatSlice.reducer;
