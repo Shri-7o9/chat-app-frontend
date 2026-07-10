@@ -2,10 +2,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./App.jsx";
-<<<<<<< HEAD
+
+
+import { BrowserRouter } from "react-router";
+
 import { Provider } from "react-redux";
-import { store } from "./store/store.js";
-import { BrowserRouter } from "react-router-dom";
+import { store } from "./stores/store.js";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -14,14 +16,7 @@ createRoot(document.getElementById("root")).render(
         <App />
       </BrowserRouter>
     </Provider>
-=======
-import { BrowserRouter } from "react-router";
+  </StrictMode>
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
->>>>>>> develop
-  </StrictMode>,
+
 );
