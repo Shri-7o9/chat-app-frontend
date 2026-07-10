@@ -2,7 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { checkAuth } from "./store/authSlice";
+import { checkAuth } from "./stores/authSlice";
+import { useDispatch, useSelector } from 'react-redux'
+
+import HomePage from "./pages/HomePage"
+import LogInPage from './pages/LogInPage'
+import SignUpPage from './pages/SignUpPage'
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UpdateProfilePage from "./pages/updateProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -19,11 +25,14 @@ const App = () => {
     return <div>Loading...</div>;
   }
 
-  return (
-    <BrowserRouter>
-      <Toaster />
-      <Navbar />
+ return (
+    <div>
       <Routes>
+        <Route path="/" element={authUser?<HomePage />:<Navigate to="/login" />} />
+        <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
+        <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
+
         <Route
           path="/"
           element={
@@ -57,8 +66,10 @@ const App = () => {
           }
         />
       </Routes>
-    </BrowserRouter>
+
+      <Toaster/>
+    </div>
   );
-};
 
 export default App;
+
