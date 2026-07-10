@@ -203,7 +203,7 @@ export const authSlice = createSlice({
         state.isUpdatingProfile = true;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.authUser = action.payload.user;
+        state.authUser = action.payload;
         state.isUpdatingProfile = false;
       })
       .addCase(updateProfile.rejected, (state) => {

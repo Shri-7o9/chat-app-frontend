@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { logoutUser } from "../store/authSlice";
+import { logoutUser } from "../stores/authSlice";
 
 const LogoutModal = () => {
   const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const LogoutModal = () => {
 
       {/* clicking outside modal closes it */}
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button></button>
       </form>
     </dialog>
   );

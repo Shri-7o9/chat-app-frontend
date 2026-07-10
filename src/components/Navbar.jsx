@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import {  useSelector } from "react-redux";
+import { Link } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { User } from "lucide-react";
 import LogoutModal from "./LogoutModal";
