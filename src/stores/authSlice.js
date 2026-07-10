@@ -147,6 +147,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //Checkout
       .addCase(checkAuth.pending, (state) => {
         state.isCheckingAuth = true;
       })
@@ -159,6 +160,7 @@ export const authSlice = createSlice({
         state.isCheckingAuth = false;
       })
       
+      //Login
       .addCase(login.pending, (state) => {
         state.isLoggingIn = true;
       })
@@ -185,6 +187,7 @@ export const authSlice = createSlice({
         state.isSigningUp = false;
       })
 
+      //Forget 
       .addCase(forgetPassword.pending, (state) => {
         state.isSendingResetLink = true;
       })
@@ -193,7 +196,7 @@ export const authSlice = createSlice({
       })
       .addCase(forgetPassword.rejected, (state) => {
         state.isSendingResetLink = false;
-      });
+      })
 
       // updateProfile
       .addCase(updateProfile.pending, (state) => {
@@ -205,7 +208,7 @@ export const authSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state) => {
         state.isUpdatingProfile = false;
-      });
+      })
 
        // logout
       .addCase(logoutUser.pending, (state) => {
