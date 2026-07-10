@@ -1,19 +1,32 @@
-import { Navigate, Route, Routes } from "react-router";
-import { Toaster } from "react-hot-toast";
+import React,{useEffect} from 'react'
+import { Routes, Route, Navigate } from 'react-router'
+import { Toaster } from 'react-hot-toast'
 
-import HomePage from "./pages/HomePage.jsx";
-import LogInPage from "./pages/LogInPage.jsx";
-import SignUpPage from "./pages/SignUpPage.jsx";
+import HomePage from "./pages/HomePage"
+import LogInPage from './pages/LogInPage'
+import SignUpPage from './pages/SignUpPage'
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import { useDispatch, useSelector } from 'react-redux'
+import { checkAuth } from './stores/authSlice'
 
-function App() {
+
+const App=()=> {
+  const dispatch=useDispatch()
+  const {isCheckingAuth,authUser}=useSelector((state)=>state.auth)
+
+  useEffect(()=>{dispatch(checkAuth())},[dispatch])
+
+  if(isCheckingAuth){
+    return <div>Loading...</div>
+  }
+  
   return (
     <div>
       <Routes>
-
-        <Route path="/" element={<HomePage /> } />
-
-        <Route path="/login" element={<LogInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/" element={authUser?<HomePage />:<Navigate to="/login" />} />
+        <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
+        <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
       </Routes>
 
       <Toaster/>
