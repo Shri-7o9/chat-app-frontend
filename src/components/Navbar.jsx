@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
 import { logoutUser } from "../store/authSlice";
 import { User } from "lucide-react";
 
@@ -10,10 +10,9 @@ const Navbar = () => {
   const { authUser, isLoggingIn } = useSelector((state) => state.auth);
 
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-
   const dropdownRef = useRef(null);
 
+  // close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -21,15 +20,14 @@ const Navbar = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
-      setShowPopup(false);
+      // close the modal after logout
+      document.getElementById("logout_modal").close();
       navigate("/login");
     } catch (error) {
       console.log("Logout failed", error);
@@ -65,13 +63,16 @@ const Navbar = () => {
             {/* dropdown */}
             {showDropdown && (
               <div>
+                {/* Update Profile */}
                 <Link to="/profile" onClick={() => setShowDropdown(false)}>
                   Update Profile
                 </Link>
+
+                {/* Logout — opens DaisyUI modal */}
                 <button
                   onClick={() => {
                     setShowDropdown(false);
-                    setShowPopup(true);
+                    document.getElementById("logout_modal").showModal();
                   }}
                 >
                   Logout
@@ -82,25 +83,33 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Logout Confirmation Popup */}
-      {showPopup && (
-        <div>
-          <div>
-            <p>Are you sure you want to logout?</p>
-            <div>
-              <button
-                onClick={() => setShowPopup(false)}
-                disabled={isLoggingIn}
-              >
-                No
-              </button>
-              <button onClick={handleLogout} disabled={isLoggingIn}>
-                {isLoggingIn ? "Logging out..." : "Yes"}
-              </button>
-            </div>
+      {/* DaisyUI Logout Confirmation Modal */}
+      <dialog id="logout_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Logout</h3>
+          <p className="py-4">Are you sure you want to logout?</p>
+          <div className="modal-action">
+            {/* No button — closes modal, stays on page */}
+            <form method="dialog">
+              <button className="btn">No</button>
+            </form>
+
+            {/* Yes button — dispatches logout */}
+            <button
+              className="btn btn-error"
+              onClick={handleLogout}
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? "Logging out..." : "Yes"}
+            </button>
           </div>
         </div>
-      )}
+
+        {/* clicking outside the modal closes it */}
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
     </>
   );
 };
