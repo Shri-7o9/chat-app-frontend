@@ -20,7 +20,7 @@ const App = () => {
   }
 
   return (
-    <BrowserRouter>
+    <>
       <Toaster />
       <Navbar />
       <Routes>
@@ -57,7 +57,7 @@ const App = () => {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 
