@@ -27,6 +27,7 @@ const App=()=> {
         <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
         <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
+        <Route path="/reset-password" element={<ResetPasswordPage/>}/>
       </Routes>
 
       <Toaster/>
