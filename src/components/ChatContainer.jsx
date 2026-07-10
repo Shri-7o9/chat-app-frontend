@@ -2,6 +2,19 @@ import { useDispatch, useSelector } from "react-redux";
 import {  getMessages,sendMessage} from "../stores/chatSlice";
 import { useEffect, useRef, useState } from "react";
 
+
+const formatTime=(dataString)=>{
+    const date=new Date(dataString)
+    return date.toLocaleString("en-US",{
+        month:"short",
+        day:"numeric",
+        year:"numeric",
+        hour:"numeric",
+        minute:"2-digit",
+        hour12: true,
+    })
+}
+
 const ChatContainer=()=>{
     const dispatch=useDispatch()
     const {selectedUser,messages,isMessagesLoading}=useSelector((state)=>state.chat)
@@ -35,33 +48,68 @@ const ChatContainer=()=>{
         return <div>Loading messages...</div>
     }
 
+    let lastDate=null
+
     return(
         <>
-        <div>
-            <h2>{selectedUser.fullName}</h2>
-        </div>
+            <div>
+                <img src={authUser?.profilePic||"/avatar-placeholder.png"} alt="me"/>
+                <span>{authUser?.fullName}</span>
+            </div>
 
-        <div>
-            {messages.map((message)=>(
-                <div key={message._id}
-                    style={{
-                        textAlign: message.senderId === authUser._id ? "right" : "left",
-                }}>
-                    <p>{message.text}</p>
+            <div>
+                <h2>{selectedUser.fullName}</h2>
+                <p>Active</p>
+            </div>
+
+            <div>
+                {messages.map((message)=>{
+                    const isSender=message.senderId===authUser._id
+                    const messageDate=newDate(message.createdAt).toDateString()
+                    const showDivider=messageDate!==lastDate
+                    lastDate=messageDate
+
+                    return(
+                        <div key={message._id}>
+                            {showDivider && <div>{formatTime(message.createdAt)}</div>}
+
+                            <div>
+                                {!isSender && (
+                                    <img
+                                    src={selectedUser.profilePic||"/avatar-placeholder.png"}
+                                    alt={selectedUser.fullName}
+                                    />
+                                    )}
+                            
+                                <div>{message.text}</div>
+                                {isSender && (
+                                    <img
+                                    src={authUser.profilePic||"/avatar-placeholder.png"}
+                                    alt="me"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                     )
+                })}
+
+                <div>
+                    <img src={selectedUser.profilePic||"/avatar-placeholder.png"} alt=""/>
+                    {selectedUser.fullName} is typing
                 </div>
-            ))}
-            <div ref={messageEndRef}/>
-        </div>
 
-        <form onSubmit={handleSend}>
-            <input
-            type="text"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e)=>setText(e.target.value)}
-            />
-            <button type="submit">Send</button>
-        </form>
+                <div ref={messageEndRef}/>
+            </div>
+
+            <form onSubmit={handleSend}>
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    value={text}
+                    onChange={(e)=>setText(e.target.value)}
+                />
+                <button type="submit">Send</button>
+            </form>
         </>
     )
 }
