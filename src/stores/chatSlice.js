@@ -5,7 +5,7 @@ export const getUsers = createAsyncThunk(
   "chat/getUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get("/messages/user");
+      const res = await axiosInstance.get("/messages/users");
       return res.data;
     } catch (error) {
       console.log("Error in getUsers:", error);

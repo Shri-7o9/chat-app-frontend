@@ -21,7 +21,9 @@ export const signup = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post("/auth/signup", {
-        fullName: formData.fullName,
+       firstName: formData.firstName,
+       lastName: formData.lastName,
+
         userName: formData.userName,
         email: formData.email,
         password: formData.password,
