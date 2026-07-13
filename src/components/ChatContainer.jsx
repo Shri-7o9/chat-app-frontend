@@ -1,18 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
-import {  getMessages,sendMessage, setReplyingTo, markMessagesAsRead, editMessage, setForwardingMessage,} from "../stores/chatSlice";
+import {  getMessages,sendMessage, setReplyingTo, markMessagesAsRead, editMessage, setForwardingMessage, reactToMessage} from "../stores/chatSlice";
 import { useEffect, useRef, useState } from "react";
-import ForwardModel from "./ForwardModel";
+import ForwardModal from "./ForwardModal";
+import { deleteMessageForMe,unsendMessage } from "../stores/chatSlice";
 
+const reactionEmojis=["🙏","👍","❤️","😒","😢","😂","😭","🤮"]
 
 const formatTime=(dataString)=>{
     const date=new Date(dataString)
     return date.toLocaleString("en-US",{
-        month:"short",
-        day:"numeric",
-        year:"numeric",
-        hour:"numeric",
-        minute:"2-digit",
-        hour12: true,
+        month:"short", day:"numeric",
+        year:"numeric", hour:"numeric",
+        minute:"2-digit", hour12: true,
     })
 }
 
@@ -38,6 +37,7 @@ const ChatContainer=()=>{
 
     const [editMessageId,setEditingMessageId]=useState(null)
     const [editText,setEditText]=useState("")
+    const [reactionPickerFor,setReactionPickerFor]=useState(null)
 
     useEffect(()=>{
         if(selectedUser?._id){
@@ -92,6 +92,21 @@ const ChatContainer=()=>{
          setEditText("")
     }
 
+    const handleReact=(messageId,emoji)=>{
+        dispatch(reactToMessage({messageId,emoji}))
+        setReactionPickerFor(null)
+    }
+
+    const handleDeleteForMe=(messageId)=>{
+        if(window.confirm("Delete this message for you?")){
+            dispatch(deleteMessageForMe(messageId))
+        }
+    }
+    const handleUnsend=(messageId)=>{
+        if(window.confirm("Unsend this message?")){
+            dispatch(unsendMessage(messageId))
+        }
+    }
 
     if(!selectedUser){
         return <div>Select a user to start chatting</div>
@@ -154,6 +169,8 @@ const ChatContainer=()=>{
                                             <button type="button" onClick={()=> saveEdit(message._id)}>Save</button>
                                             <button type="button" onClick={cancelEdit}>Cancel</button>
                                         </div>
+                                    ):message.unsent?(
+                                        <p><em>This message was deleted</em></p>
                                     ):(
                                         <>
                                             <p>
@@ -164,6 +181,17 @@ const ChatContainer=()=>{
                                             {isSender && <MessageStatus message={message}/>}
                                         </>
                                     )}
+
+                                    {message.reactions?.length>0&&(
+                                        <div>
+                                            {message.reactions.map((r)=>(
+                                                <span key={r.userId + r.emoji} title={r.userId === authUser._id ? "You":""}>
+                                                    {r.emoji}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+
                                     {!isEditing && (
                                         <div>
                                             {isSender && (
@@ -173,6 +201,25 @@ const ChatContainer=()=>{
                                             <button type="button" onClick={()=>dispatch(setForwardingMessage(message))}>
                                                 Forward
                                             </button>
+                                            <button 
+                                            type="button"
+                                            onClick={()=> setReactionPickerFor(reactionPickerFor===message.id?null:message._id)}>
+                                                React
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {reactionPickerFor===message.id && (
+                                        <div>
+                                            {reactionEmojis.map((emoji)=>(
+                                                <button
+                                                    key={emoji}
+                                                    type="button"
+                                                    onClick={()=>handleReact(message._id,emoji)}
+                                                >
+                                                    {emoji}
+                                                </button>
+                                            ))}
                                         </div>
                                     )}
                                     
@@ -205,7 +252,7 @@ const ChatContainer=()=>{
                 <div>
                     <div>
                         <span>
-                            Replying to {replyingTo.senderId===authUser._id ? "Youeself":selectedUser.fullName}
+                            Replying to {replyingTo.senderId===authUser._id ? "Yourself":selectedUser.fullName}
                         </span>
                         <p>{replyingTo.text}</p>
                     </div>
@@ -223,7 +270,7 @@ const ChatContainer=()=>{
                 <button type="submit">Send</button>
             </form>
 
-            <ForwardModel/>
+            <ForwardModal/>
         </>
     )
 }

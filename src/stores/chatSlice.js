@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../libs/axios";
 import toast from "react-hot-toast";
+import { act } from "react";
 
 export const getUsers = createAsyncThunk(
   "chat/getUsers",
@@ -91,6 +92,52 @@ export const forwardMessage = createAsyncThunk(
   },
 );
 
+export const reactToMessage = createAsyncThunk(
+  "chat/reactToMessage",
+  async ({ messageId, emoji }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/messages/react/${messageId", {
+        emoji,
+      });
+      return res.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to react";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const deleteMessageForMe = createAsyncThunk(
+  "chat/deleteMessageForMe",
+  async (messageId, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/messages/${messageId}/me`);
+      return messageId;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to delete message";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const unsendMessage = createAsyncThunk(
+  "chat/unsendMessage",
+  async (messageId, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.delete(`/messages/${messageId}/everyone`);
+      return res.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to unsend message";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
 const chatSlice = createSlice({
   name: "Chat",
   initialState: {
@@ -166,10 +213,34 @@ const chatSlice = createSlice({
       })
       .addCase(forwardMessage.fulfilled, (state) => {
         state.forwardingMessage = null;
+      })
+      .addCase(reactToMessage.fulfilled, (state, action) => {
+        const index = state.messages.findIndex(
+          (m) => m._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
+      })
+      .addCase(deleteMessageForMe.fulfilled, (state, action) => {
+        state.messages = state.messages.filter((m) => m._id !== action.payload);
+      })
+      .addCase(unsendMessage.fulfilled, (state, action) => {
+        const index = state.messages.findIndex(
+          (m) => m._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
       });
   },
 });
 
-export const { setSelectedUser, addMessage, setIsTyping, setReplyingTo, setForwardingMessage} =
-  chatSlice.actions;
+export const {
+  setSelectedUser,
+  addMessage,
+  setIsTyping,
+  setReplyingTo,
+  setForwardingMessage,
+} = chatSlice.actions;
 export default chatSlice.reducer;

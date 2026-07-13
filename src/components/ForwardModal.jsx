@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { forwardMessage, setForwardingMessage } from "../stores/chatSlice"
 
-const ForwardModel=()=>{
+const ForwardModal=()=>{
     const dispatch=useDispatch()
     const {forwardingMessage, users}=useSelector((state)=>state.chat)
 
@@ -34,4 +34,4 @@ const ForwardModel=()=>{
     )
 }
 
-export default ForwardModel
+export default ForwardModal
