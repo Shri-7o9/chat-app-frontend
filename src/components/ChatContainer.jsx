@@ -192,7 +192,7 @@ const ChatContainer=()=>{
                                         </div>
                                     )}
 
-                                    {!isEditing && (
+                                    {!isEditing && !message.unsent &&(
                                         <div>
                                             {isSender && (
                                                 <button type="button" onClick={()=> startEdit(message)}>Edit</button>
@@ -202,10 +202,18 @@ const ChatContainer=()=>{
                                                 Forward
                                             </button>
                                             <button 
-                                            type="button"
-                                            onClick={()=> setReactionPickerFor(reactionPickerFor===message.id?null:message._id)}>
-                                                React
+                                                type="button"
+                                                onClick={()=> setReactionPickerFor(reactionPickerFor===message.id?null:message._id)}>
+                                                    React
                                             </button>
+                                            <button type="button" onClick={()=>handleDeleteForMe(message._id)}>
+                                                Delete for me
+                                            </button>
+                                            {isSender && (
+                                                <button type="button" onClick={()=>handleUnsend(message._id)}>
+                                                    Unsend
+                                                </button>
+                                            )}
                                         </div>
                                     )}
 

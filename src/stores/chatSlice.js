@@ -138,6 +138,52 @@ export const unsendMessage = createAsyncThunk(
   },
 );
 
+export const getMessageRequests = createAsyncThunk(
+  "chat/getMessageRequests",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get("/messages/requests");
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to load request",
+      );
+    }
+  },
+);
+
+export const acceptMessageRequest = createAsyncThunk(
+  "chat/acceptMessageRequest",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(
+        `messages/requests/${userId}/accept`,
+      );
+      toast.success("Request accepted");
+      return res.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to accept request";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const blockMessageRequest = createAsyncThunk("chat/blockMessageRequest",
+  async(userId,{rejectWithValue})=>{
+    try{
+      await axiosInstance.post(`/messages/requests/${userId}/block`)
+      toast.success("User Blocked")
+      return userId
+    }catch(error){
+      const message=error.response?.data?.message||"Failed to block user"
+      toast.error(message)
+      return rejectWithValue(message)
+    }
+  }
+)
+
 const chatSlice = createSlice({
   name: "Chat",
   initialState: {
@@ -149,6 +195,8 @@ const chatSlice = createSlice({
     isTyping: false,
     replyingTo: null,
     forwardingMessage: null,
+    messageRequests:[],
+    isRequestsLoading:false,
   },
   reducers: {
     setSelectedUser: (state, action) => {
@@ -232,7 +280,27 @@ const chatSlice = createSlice({
         if (index !== -1) {
           state.messages[index] = action.payload;
         }
-      });
+      })
+      .addCase(getMessageRequests.pending,(state)=>{
+        state.isRequestsLoading=true
+      })
+      .addCase(getMessageRequests.fulfilled,(state,action)=>{
+        state.messageRequests = action.payload;
+        state.isRequestsLoading = false;
+      })
+      .addCase(getMessageRequests.rejected,(state)=>{
+        state.isRequestsLoading=false
+      })
+      .addCase(acceptMessageRequest.fulfilled,(state,action)=>{
+        state.messageRequests=state.messageRequests.filter((u)=>u._id !== action.payload.userId)
+        if(!state.users.some((u)=>u.id===action.payload.userId)){
+          const accepted=state.messageRequests.find((u)=>u._id===action.payload.userId)
+          if (accepted) state.users.push(accepted)
+        }
+      })
+      .addCase(blockMessageRequest.fulfilled,(state,action)=>{
+        state.messageRequests=state.messageRequests.filter((u)=>u._id !==action.payload)
+      })
   },
 });
 
