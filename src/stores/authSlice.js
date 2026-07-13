@@ -165,7 +165,7 @@ export const authSlice = createSlice({
         state.isLoggingIn = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authUser = action.payload;
+        state.authUser = action.payload.user;
         state.isLoggingIn = false;
       })
 

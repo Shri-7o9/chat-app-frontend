@@ -18,12 +18,13 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  
+  console.log(authUser);
   return (
     <>
       <nav>
         {/* Logo */}
-        <Link to={authUser ? "/chat" : "/login"}>ChatApp</Link>
+        <Link to={authUser ? "/" : "/login"}>ChatApp</Link>
 
         {/* logged out */}
         {!authUser && (
@@ -39,7 +40,8 @@ const Navbar = () => {
             {/* username with icon */}
             <div>
               <User size={18} />
-              <span>{authUser.fullName}</span>
+              
+              <span>{authUser.lastName}</span>
             </div>
 
             {/* settings button */}
