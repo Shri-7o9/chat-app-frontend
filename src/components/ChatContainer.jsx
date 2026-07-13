@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import {  getMessages,sendMessage} from "../stores/chatSlice";
+import {  getMessages,sendMessage, setReplyingTo, markMessagesAsRead, editMessage, setForwardingMessage,} from "../stores/chatSlice";
 import { useEffect, useRef, useState } from "react";
+import ForwardModel from "./ForwardModel";
 
 
 const formatTime=(dataString)=>{
@@ -15,9 +16,19 @@ const formatTime=(dataString)=>{
     })
 }
 
+const MessageStatus=({message})=>{
+    if(message.read){
+        return <span style={{color:"#4fc3f7"}}>✔✔</span>
+    }
+    if(message.delivered){
+        return <span>✔✔</span>
+    }
+    return <span>✔</span>
+}
+
 const ChatContainer=()=>{
     const dispatch=useDispatch()
-    const {selectedUser,messages,isMessagesLoading, isTyping}=useSelector((state)=>state.chat)
+    const {selectedUser,messages,isMessagesLoading, isTyping, replyingTo}=useSelector((state)=>state.chat)
     const {authUser, onlineUsers}=useSelector((state)=>state.auth)
 
     const [text,setText]=useState("")
@@ -25,9 +36,13 @@ const ChatContainer=()=>{
 
     const isOnline= onlineUsers.includes(selectedUser?._id)
 
+    const [editMessageId,setEditingMessageId]=useState(null)
+    const [editText,setEditText]=useState("")
+
     useEffect(()=>{
         if(selectedUser?._id){
             dispatch(getMessages(selectedUser._id))
+            dispatch(markMessagesAsRead(selectedUser._id))
         }
     },[selectedUser,dispatch])
 
@@ -36,11 +51,47 @@ const ChatContainer=()=>{
     },[messages])
 
     const handleSend=(e)=>{
-        e.prenevtDefault()
-        if(!text.trim())
-            return dispatch(sendMessage({userId:selectedUser._id,data:{text}}))
-            setText("")
+        e.preventDefault()
+        if(!text.trim()) return 
+
+        const data={text}
+        if(replyingTo){
+            data.replyTo=replyingTo._id
+        }
+
+        dispatch(sendMessage({userId:selectedUser._id,data}))
+        setText("")
     }
+
+    const handleReplyClick=(message)=>{
+        dispatch(setReplyingTo(message))
+    }
+
+    const cancelReply=()=>{
+        dispatch(setReplyingTo(null))
+    }
+
+    const findRepliedMessage=(replyToId)=>{
+        return messages.find((m)=>m._id===replyToId)
+    }
+
+    const startEdit=(message)=>{
+        setEditingMessageId(message._id)
+        setEditText(message.text)
+    }
+
+    const cancelEdit=()=>{
+        setEditingMessageId(null)
+        setEditText("")
+    }
+
+    const saveEdit=(messageId)=>{
+        if(!editText.trim()) return 
+         dispatch(editMessage({messageId,text:editText}))
+         setEditingMessageId(null)
+         setEditText("")
+    }
+
 
     if(!selectedUser){
         return <div>Select a user to start chatting</div>
@@ -62,15 +113,18 @@ const ChatContainer=()=>{
             <div>
                 {messages.map((message)=>{
                     const isSender=message.senderId===authUser._id
-                    const messageDate=newDate(message.createdAt).toDateString()
+                    const messageDate=new Date(message.createdAt).toDateString()
                     const showDivider=messageDate!==lastDate
                     lastDate=messageDate
+
+                    const repliedMessage=message.replyTo ? findRepliedMessage(message.replyTo):null
+                    const isEditing=editMessageId===message._id
 
                     return(
                         <div key={message._id}>
                             {showDivider && <div>{formatTime(message.createdAt)}</div>}
 
-                            <div>
+                            <div onDoubleClick={()=> handleReplyClick(message)}>
                                 {!isSender && (
                                     <img
                                     src={selectedUser.profilePic||"/avatar-placeholder.png"}
@@ -78,7 +132,52 @@ const ChatContainer=()=>{
                                     />
                                     )}
                             
-                                <div>{message.text}</div>
+                                <div>
+                                    {message.forwarded && <span>Forwarded</span>}
+ 
+                                    {repliedMessage && (
+                                        <div>
+                                            <span>
+                                                {repliedMessage.senderId===authUser._id ? "You":selectedUser.fullName}
+                                            </span>
+                                            <p>{repliedMessage.text}</p>
+                                        </div>
+                                    )}
+
+                                    {isEditing?(
+                                        <div>
+                                            <input
+                                                type="text"
+                                                value={editText}
+                                                onChange={(e)=> setEditText(e.target.value)}
+                                            />
+                                            <button type="button" onClick={()=> saveEdit(message._id)}>Save</button>
+                                            <button type="button" onClick={cancelEdit}>Cancel</button>
+                                        </div>
+                                    ):(
+                                        <>
+                                            <p>
+                                                {message.text}
+                                                {message.edited && <span>(edited)</span>}
+                                            </p>
+                                            <span>{formatTime(message.createdAt)}</span>
+                                            {isSender && <MessageStatus message={message}/>}
+                                        </>
+                                    )}
+                                    {!isEditing && (
+                                        <div>
+                                            {isSender && (
+                                                <button type="button" onClick={()=> startEdit(message)}>Edit</button>
+
+                                            )}
+                                            <button type="button" onClick={()=>dispatch(setForwardingMessage(message))}>
+                                                Forward
+                                            </button>
+                                        </div>
+                                    )}
+                                    
+                                </div>
+
                                 {isSender && (
                                     <img
                                     src={authUser.profilePic||"/avatar-placeholder.png"}
@@ -102,6 +201,18 @@ const ChatContainer=()=>{
                 <div ref={messageEndRef}/>
             </div>
 
+            {replyingTo && (
+                <div>
+                    <div>
+                        <span>
+                            Replying to {replyingTo.senderId===authUser._id ? "Youeself":selectedUser.fullName}
+                        </span>
+                        <p>{replyingTo.text}</p>
+                    </div>
+                    <button type="button" onClick={cancelReply}>✕</button>
+                </div>
+            )}
+
             <form onSubmit={handleSend}>
                 <input
                     type="text"
@@ -111,6 +222,8 @@ const ChatContainer=()=>{
                 />
                 <button type="submit">Send</button>
             </form>
+
+            <ForwardModel/>
         </>
     )
 }

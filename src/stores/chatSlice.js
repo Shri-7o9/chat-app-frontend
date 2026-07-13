@@ -45,6 +45,52 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
+export const markMessagesAsRead = createAsyncThunk(
+  "chat/markMessagesAsRead",
+  async (senderId, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.patch(`/messages/read/${senderId}`);
+      return { senderId, ...res.data };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "failed to update read status",
+      );
+    }
+  },
+);
+
+export const editMessage = createAsyncThunk(
+  "chat/editMessage",
+  async ({ messageId, text }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.patch(`/messages/${messageId}`, { text });
+      return res.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to edit the message";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const forwardMessage = createAsyncThunk(
+  "chat/forwardMessage",
+  async ({ messageId, toUserId }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(`/messages/forwars/${messageId}`, {
+        toUserId,
+      });
+      toast.success("Message forwarded");
+      return res.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to forward";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
 const chatSlice = createSlice({
   name: "Chat",
   initialState: {
@@ -54,17 +100,26 @@ const chatSlice = createSlice({
     isUsersLoading: false,
     isMessagesLoading: false,
     isTyping: false,
+    replyingTo: null,
+    forwardingMessage: null,
   },
   reducers: {
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
       state.messages = [];
+      state.replyingTo = null;
     },
     addMessage: (state, action) => {
       state.messages.push(action.payload);
     },
     setIsTyping: (state, action) => {
       state.isTyping = action.payload;
+    },
+    setReplyingTo: (state, action) => {
+      state.replyingTo = action.payload;
+    },
+    setForwardingMessage: (state, action) => {
+      state.forwardingMessage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -92,9 +147,29 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.message.push(action.payload);
+        state.replyingTo = null;
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        state.messages = state.messages.map((msg) =>
+          msg.senderId === action.payload.senderId
+            ? { ...msg, read: true }
+            : msg,
+        );
+      })
+      .addCase(editMessage.fulfilled, (state, action) => {
+        const index = state.messages.findIndex(
+          (m) => m._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
+      })
+      .addCase(forwardMessage.fulfilled, (state) => {
+        state.forwardingMessage = null;
       });
   },
 });
 
-export const { setSelectedUser, addMessage, setIsTyping } = chatSlice.actions;
+export const { setSelectedUser, addMessage, setIsTyping, setReplyingTo, setForwardingMessage} =
+  chatSlice.actions;
 export default chatSlice.reducer;
