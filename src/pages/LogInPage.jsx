@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import { forgetPassword, login } from "../stores/authSlice";
+import Navbar from "../components/Navbar";
 import { Eye, EyeOff } from "lucide-react";
 
 
@@ -66,6 +67,7 @@ const LogInPage = () => {
   
   return (
     <>
+    <Navbar/>
     <div>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>

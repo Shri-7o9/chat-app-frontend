@@ -80,6 +80,36 @@ export const resetPassword = createAsyncThunk(
   },
 );
 
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.put("/auth/update-profile", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
+      toast.success("Profile updated successfully");
+      return res.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
+    }
+  },
+);
+
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message);
+    }
+  },
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -87,13 +117,17 @@ export const authSlice = createSlice({
     isSigningUp: false,
     isLoggingIn: false,
     isCheckingAuth: true,
-
+    isUpdatingProfile: false,
     onlineUsers: [],
     socket: null,
     isSendingResetLink: false,
   },
 
   reducers: {
+
+    setUser: (state, action) => {
+      state.authUser = action.payload;
+    },
 
     setSocket: (state, action) => {
       state.socket = action.payload;
@@ -113,6 +147,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //Checkout
       .addCase(checkAuth.pending, (state) => {
         state.isCheckingAuth = true;
       })
@@ -125,6 +160,7 @@ export const authSlice = createSlice({
         state.isCheckingAuth = false;
       })
       
+      //Login
       .addCase(login.pending, (state) => {
         state.isLoggingIn = true;
       })
@@ -151,6 +187,7 @@ export const authSlice = createSlice({
         state.isSigningUp = false;
       })
 
+      //Forget 
       .addCase(forgetPassword.pending, (state) => {
         state.isSendingResetLink = true;
       })
@@ -159,7 +196,34 @@ export const authSlice = createSlice({
       })
       .addCase(forgetPassword.rejected, (state) => {
         state.isSendingResetLink = false;
-      });
+      })
+
+      // updateProfile
+      .addCase(updateProfile.pending, (state) => {
+        state.isUpdatingProfile = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.authUser = action.payload;
+        state.isUpdatingProfile = false;
+      })
+      .addCase(updateProfile.rejected, (state) => {
+        state.isUpdatingProfile = false;
+      })
+
+       // logout
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoggingIn = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.authUser = null;
+        state.isLoggingIn = false;
+        state.socket = null;
+        state.onlineUsers = [];
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.isLoggingIn = false;
+      })
+
   },
 });
 
