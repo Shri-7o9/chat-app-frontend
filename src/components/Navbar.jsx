@@ -29,7 +29,7 @@ const Navbar = () => {
         <nav className="flex items-center justify-between w-full px-4">
           {/* Logo */}
           <Link
-            to={authUser ? "/chat" : "/login"}
+            to={authUser ? "/" : "/login"}
             className="group text-3xl font-bold cursor-pointer inline-block
               transition-all duration-300
               hover:scale-110"
