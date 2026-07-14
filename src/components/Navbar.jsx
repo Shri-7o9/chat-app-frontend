@@ -1,8 +1,8 @@
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router";
-import { useState, useRef, useEffect } from "react";
-import { User } from "lucide-react";
+import { Settings, User, LogOut } from "lucide-react";
 import LogoutModal from "./LogoutModal";
+import { useState, useRef, useEffect } from "react";
 
 const Navbar = () => {
   const { authUser } = useSelector((state) => state.auth);
@@ -22,54 +22,94 @@ const Navbar = () => {
   console.log(authUser);
   return (
     <>
-      <nav>
-        {/* Logo */}
-        <Link to={authUser ? "/" : "/login"}>ChatApp</Link>
+      <div
+        className="navbar bg-base-100 shadow-lg"
+        data-theme="corporate"
+      >
+        <nav className="flex items-center justify-between w-full px-4">
+          {/* Logo */}
+          <Link
+            to={authUser ? "/" : "/login"}
+            className="group text-3xl font-bold cursor-pointer inline-block
+              transition-all duration-300
+              hover:scale-110"
+          >
+            <span className="text-black transition-colors duration-300 group-hover:text-blue-500">
+              Chat
+            </span>
+            <span className="text-blue-500 transition-colors duration-300 group-hover:text-black">
+              App
+            </span>
+          </Link>
 
-        {/* logged out */}
-        {!authUser && (
-          <div>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </div>
-        )}
-
-        {/* logged in */}
-        {authUser && (
-          <div ref={dropdownRef}>
-            {/* username with icon */}
-            <div>
-              <User size={18} />
-              
-              <span>{authUser.lastName}</span>
+          {/* Logged Out */}
+          {!authUser && (
+            <div className="flex gap-3">
+              <Link to="/login">
+              <a className="btn rounded-full text-primary border-primary bg-transparent
+                     hover:bg-primary hover:text-primary-content hover:scale-110
+                     transition-all duration-300">
+                Login
+              </a>
+              </Link>
+              <Link to="/signup">
+              <a className="btn rounded-full text-secondary border border-secondary bg-transparent
+                     hover:bg-secondary hover:text-secondary-content hover:scale-110
+                     transition-all duration-300">
+                Sign Up
+              </a>
+              </Link>
             </div>
+          )}
 
-            {/* settings button */}
-            <button onClick={() => setShowDropdown(!showDropdown)}>⚙️</button>
-
-            {/* dropdown */}
-            {showDropdown && (
-              <div>
-                <Link to="/profile" onClick={() => setShowDropdown(false)}>
-                  Update Profile
-                </Link>
-
-                {/* opens the modal */}
-                <button
-                  onClick={() => {
-                    setShowDropdown(false);
-                    document.getElementById("logout_modal").showModal();
-                  }}
-                >
-                  Logout
-                </button>
+          {/* Logged In */}
+          {authUser && (
+            <div className="flex items-center gap-4">
+              {/* Username */}
+              <div className="flex items-center gap-2">
+                <User size={18} />
+                <span>{authUser.fullName}</span>
               </div>
-            )}
-          </div>
-        )}
-      </nav>
 
-      {/* Logout Modal — separate component */}
+              {/* Settings Dropdown */}
+              <div className="dropdown dropdown-end">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn btn-ghost btn-circle transition-all duration-300 hover:rotate-90"
+                >
+                  <Settings className="w-6 h-6" />
+                </div>
+
+                <ul
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                >
+                  <li>
+                    <Link to="/profile">Update Profile</Link>
+                  </li>
+
+                  <li>
+                    <button
+                      className="flex items-center gap-2 text-error"
+                      onClick={() =>
+                        document
+                          .getElementById("logout_modal")
+                          .showModal()
+                      }
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </nav>
+      </div>
+
+      {/* Logout Modal */}
       <LogoutModal />
     </>
   );

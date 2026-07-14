@@ -1,13 +1,35 @@
-import { useSelector } from "react-redux";
-import ChatContainer from "../components/ChatContainer"
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUsers } from "../stores/chatSlice.js";
 
+import ChatContainer from "../components/ChatContainer"
 import Navbar from "../components/Navbar";
+import Sidebar from "../components/SideBar/SideBar.jsx";
+import ChatWindow from "../components/Chat/ChatWindow.jsx";
 
 const HomePage = () => {
-  const {selectedUser}=useSelector((state)=>state.chat)
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.authUser);
+  const { users, selectedUser } = useSelector((state) => state.chat);
 
-  return(
-    <>
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+  return (
+    <div>
+       <Navbar/>
+  <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
+      {/* Left side Sidebar fixed width */}
+      <div style={{ width: "300px", flexShrink: 0 }}>
+        <Sidebar
+          users={users}
+          currentUser={currentUser}
+          selectedUser={selectedUser}
+        />
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        
       <div style={{ flex: 1 }}>
         {selectedUser ? (
           <ChatContainer />
@@ -17,11 +39,10 @@ const HomePage = () => {
           </div>
         )}
       </div>
-    </>
-    
-  )
-  
-  
-}
+      </div>
+    </div>
+    </div>
+  );
+};
 
 export default HomePage;

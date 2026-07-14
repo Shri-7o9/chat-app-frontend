@@ -40,9 +40,9 @@ const LogoutModal = () => {
         </div>
       </div>
 
-      {/* clicking outside modal closes it */}
+      {/* outside click closes modal  */}
       <form method="dialog" className="modal-backdrop">
-        <button></button>
+        <button>close</button>
       </form>
     </dialog>
   );

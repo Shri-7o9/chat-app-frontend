@@ -17,7 +17,7 @@ const UpdateProfilePage = () => {
     e.preventDefault();
     try {
       await dispatch(updateProfile(formData)).unwrap();
-      navigate("/chat");
+      navigate("/");
     } catch (error) {
       console.log("Update failed", error);
     }
@@ -57,7 +57,7 @@ const UpdateProfilePage = () => {
         </button>
       </form>
 
-      <button onClick={() => navigate("/chat")}>Back</button>
+      <button onClick={() => navigate("/")}>Back</button>
     </div>
   );
 };
