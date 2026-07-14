@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../stores/chatSlice.js";
-import Navbar from "../components/Navbar/NavBar.jsx";
 import Sidebar from "../components/SideBar/SideBar.jsx";
 import ChatWindow from "../components/Chat/ChatWindow.jsx";
 
@@ -16,7 +15,6 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen flex-col">
-      <Navbar />
       <div className="flex flex-1 min-h-0">
         <Sidebar
           users={users}
