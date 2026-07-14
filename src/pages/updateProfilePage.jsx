@@ -57,7 +57,7 @@ const UpdateProfilePage = () => {
         </button>
       </form>
 
-      <button onClick={() => navigate("/chat")}>Back</button>
+      <button onClick={() => navigate("/")}>Back</button>
     </div>
   );
 };
