@@ -118,6 +118,8 @@ const ChatContainer=()=>{
 
     let lastDate=null
 
+    
+    
     return(
         <>
             <div>
@@ -131,7 +133,8 @@ const ChatContainer=()=>{
                     const messageDate=new Date(message.createdAt).toDateString()
                     const showDivider=messageDate!==lastDate
                     lastDate=messageDate
-
+                    console.log(isSender);
+                    
                     const repliedMessage=message.replyTo ? findRepliedMessage(message.replyTo):null
                     const isEditing=editMessageId===message._id
 
