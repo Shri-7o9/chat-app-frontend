@@ -85,7 +85,7 @@ const UpdateProfilePage = () => {
 <div className="flex justify-center mt-3">
  <button
   type="button"
-  onClick={() => navigate("/chat")}
+  onClick={() => navigate("/")}
   className="btn rounded-full bg-transparent border-primary text-primary  hover:scale-110 transition-all duration-300"
 >
   Back
