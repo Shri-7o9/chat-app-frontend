@@ -29,6 +29,7 @@ const HomePage = () => {
         <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
       </div>
     </div>
+    </div>
   )
 }
 

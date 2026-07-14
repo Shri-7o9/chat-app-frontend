@@ -17,7 +17,7 @@ const UpdateProfilePage = () => {
     e.preventDefault();
     try {
       await dispatch(updateProfile(formData)).unwrap();
-      navigate("/chat");
+      navigate("/");
     } catch (error) {
       console.log("Update failed", error);
     }
