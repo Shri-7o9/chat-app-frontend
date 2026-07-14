@@ -18,7 +18,6 @@ const HomePage = () => {
   return (
     <div>
        <Navbar/>
-       HomePage
   <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
       {/* Left side Sidebar fixed width */}
       <div style={{ width: "300px", flexShrink: 0 }}>
