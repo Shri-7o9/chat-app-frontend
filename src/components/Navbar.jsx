@@ -2,10 +2,24 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router";
 import { Settings, User, LogOut } from "lucide-react";
 import LogoutModal from "./LogoutModal";
+import { useState, useRef, useEffect } from "react";
 
 const Navbar = () => {
   const { authUser } = useSelector((state) => state.auth);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
+  console.log(authUser);
   return (
     <>
       <div
