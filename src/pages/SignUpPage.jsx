@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
 import { signup } from "../stores/authSlice.js";
+import Navbar from "../components/Navbar.jsx";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -81,6 +82,8 @@ const SignUpPage = () => {
 
   return (
     <div>
+      <Navbar/>
+      <h1>Sign Up</h1>
 
       <form onSubmit={handleSubmit}>
         <div>

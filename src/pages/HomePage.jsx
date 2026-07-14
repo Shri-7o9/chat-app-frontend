@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../stores/chatSlice.js";
+
+import Navbar from "../components/Navbar";
 import Sidebar from "../components/SideBar/SideBar.jsx";
 import ChatWindow from "../components/Chat/ChatWindow.jsx";
 
-export default function HomePage() {
+const HomePage = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.authUser);
   const { users, selectedUser } = useSelector((state) => state.chat);
@@ -14,6 +16,9 @@ export default function HomePage() {
   }, [dispatch]);
 
   return (
+    <div>
+       <Navbar/>
+       HomePage
     <div className="flex h-screen flex-col">
       <div className="flex flex-1 min-h-0">
         <Sidebar
@@ -24,5 +29,7 @@ export default function HomePage() {
         <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
       </div>
     </div>
-  );
+  )
 }
+
+export default HomePage;
