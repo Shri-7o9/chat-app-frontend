@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../stores/chatSlice.js";
-import Navbar from "../components/Navbar/Navbar";
-import Sidebar from "../components/Sidebar/Sidebar";
-import ChatWindow from "../components/Chat/ChatWindow";
+import Navbar from "../components/Navbar/NavBar.jsx";
+import Sidebar from "../components/SideBar/SideBar.jsx";
+import ChatWindow from "../components/Chat/ChatWindow.jsx";
 
 export default function HomePage() {
   const dispatch = useDispatch();

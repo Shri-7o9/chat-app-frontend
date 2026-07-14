@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { MessageSquare, LogOut } from "lucide-react";
 import { logoutUser } from "../../stores/authSlice.js";
 

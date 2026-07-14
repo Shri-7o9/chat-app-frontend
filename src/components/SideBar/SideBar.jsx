@@ -52,7 +52,7 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
       </div>
 
       {showNewChatModal && (
-        <NewChatModal onClose={() => setShowNewChatModal(false)} />
+        <NewChatModel onClose={() => setShowNewChatModal(false)} />
       )}
     </aside>
   );
