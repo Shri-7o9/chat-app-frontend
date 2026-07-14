@@ -1,38 +1,77 @@
-import React,{useEffect} from 'react'
-import { Routes, Route, Navigate } from 'react-router'
-import { Toaster } from 'react-hot-toast'
+import {  Routes, Route, Navigate } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { checkAuth } from "./stores/authSlice";
 
 import HomePage from "./pages/HomePage"
 import LogInPage from './pages/LogInPage'
 import SignUpPage from './pages/SignUpPage'
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import { useDispatch, useSelector } from 'react-redux'
-import { checkAuth } from './stores/authSlice'
+import UpdateProfilePage from "./pages/updateProfilePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
+const App = () => {
+  const dispatch = useDispatch();
+  const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
 
-const App=()=> {
-  const dispatch=useDispatch()
-  const {isCheckingAuth,authUser}=useSelector((state)=>state.auth)
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  useEffect(()=>{dispatch(checkAuth())},[dispatch])
-
-  if(isCheckingAuth){
-    return <div>Loading...</div>
+  if (isCheckingAuth) {
+    return <div>Loading...</div>;
   }
-  
-  return (
+
+ return (
     <div>
       <Routes>
         <Route path="/" element={authUser?<HomePage />:<Navigate to="/login" />} />
         <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
         <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
+<<<<<<< HEAD
         <Route path="/reset-password" element={<ResetPasswordPage/>}/>
+=======
+
+        <Route
+          path="/"
+          element={
+            authUser ? <Navigate to="/chat" /> : <Navigate to="/login" />
+          }
+        />
+        <Route path="/login" element={<div>Login Page</div>} />
+        <Route path="/signup" element={<div>Signup Page</div>} />
+        <Route
+          path="/verify-email/:token"
+          element={<div>Verify Email Page</div>}
+        />
+        <Route
+          path="/reset-password/:token"
+          element={<div>Reset Password Page</div>}
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UpdateProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <div>Chat Page Coming Soon</div>
+            </ProtectedRoute>
+          }
+        />
+>>>>>>> develop
       </Routes>
 
       <Toaster/>
     </div>
   );
-}
-export default App;
+};
 
+export default App;

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import { login, forgetPassword } from "../stores/authSlice";
+import { useState } from "react"
+import { Link } from "react-router"
+import toast from "react-hot-toast"
+import { useDispatch, useSelector } from "react-redux"
+import { forgetPassword, login } from "../stores/authSlice";
 import { Eye, EyeOff } from "lucide-react";
+import Navbar from "../components/Navbar";
 
-const HomePage = () => {
+
+const LogInPage = () => {
   const dispatch = useDispatch();
 
   const { isLoggingIn, isSendingResetLink } = useSelector(
@@ -48,7 +50,8 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-base-200" data-theme="corporate">
+    <Navbar/>
+<div className="min-h-screen bg-base-200" data-theme="corporate">
       {/* Main */}
       <div className="hero min-h-[90vh]">
         <div
@@ -234,4 +237,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default LogInPage;
