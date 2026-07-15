@@ -28,7 +28,7 @@ const HomePage = () => {
         />
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
+        <ChatWindow />
       </div>
     </div>
     </div>
