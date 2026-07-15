@@ -3,22 +3,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { Plus } from "lucide-react";
 import { setSelectedUser } from "../../stores/chatSlice.js";
 import UserListItem from "./UserListItem.jsx";
-import NewChatModel from "./NewChatModel.jsx";
+import NewChatModal from "./NewChatModel.jsx";
 
 export default function Sidebar({ users, currentUser, selectedUser }) {
   const dispatch = useDispatch();
   const onlineUsers = useSelector((state) => state.auth.onlineUsers) || [];
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [query, setQuery] = useState("");
+
+  // filters your EXISTING contacts only
+  const filteredUsers = users.filter((u) =>
+    `${u.firstName} ${u.lastName}`.toLowerCase().includes(query.trim().toLowerCase())
+  );
 
   return (
     <aside>
       <div>
         <h2>Chats</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input type="text" placeholder="Search users..." />
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <button
             onClick={() => setShowNewChatModal(true)}
-            title="Start new chat"
+            title="Add new user"
             style={{
               display: "flex",
               alignItems: "center",
@@ -36,7 +47,7 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
       </div>
 
       <div>
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <UserListItem
             key={user._id}
             user={user}
@@ -52,7 +63,7 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
       </div>
 
       {showNewChatModal && (
-        <NewChatModel onClose={() => setShowNewChatModal(false)} />
+        <NewChatModal onClose={() => setShowNewChatModal(false)} />
       )}
     </aside>
   );

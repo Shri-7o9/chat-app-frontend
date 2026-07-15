@@ -48,6 +48,17 @@ export const sendMessage = createAsyncThunk(
     }
   },
 );
+export const addConnection = createAsyncThunk(
+  "chat/addConnection",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(`/connections/add/${userId}`);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
 
 const initialState = {
   users: [],
