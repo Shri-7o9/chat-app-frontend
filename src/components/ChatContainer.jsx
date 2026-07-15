@@ -28,12 +28,13 @@ const MessageStatus=({message})=>{
 const ChatContainer=()=>{
     const dispatch=useDispatch()
     const {selectedUser,messages,isMessagesLoading, isTyping, replyingTo}=useSelector((state)=>state.chat)
-    const {authUser, onlineUsers}=useSelector((state)=>state.auth)
+    const authUser =useSelector((state)=>state.auth.authUser)
+    // const onlineUsers = useSelector((state) => state.auth)
 
     const [text,setText]=useState("")
     const messageEndRef=useRef(null)
 
-    const isOnline= onlineUsers.includes(selectedUser?._id)
+    // const isOnline= onlineUsers.includes(selectedUser._id)
 
     const [editMessageId,setEditingMessageId]=useState(null)
     const [editText,setEditText]=useState("")
@@ -41,8 +42,8 @@ const ChatContainer=()=>{
 
     useEffect(()=>{
         if(selectedUser?._id){
-            dispatch(getMessages(selectedUser._id))
-            dispatch(markMessagesAsRead(selectedUser._id))
+            dispatch(getMessages(selectedUser?._id))
+            dispatch(markMessagesAsRead(selectedUser?._id))
         }
     },[selectedUser,dispatch])
 
@@ -59,7 +60,7 @@ const ChatContainer=()=>{
             data.replyTo=replyingTo._id
         }
 
-        dispatch(sendMessage({userId:selectedUser._id,data}))
+        dispatch(sendMessage({userId:selectedUser?._id,data}))
         setText("")
     }
 
@@ -123,17 +124,19 @@ const ChatContainer=()=>{
     return(
         <>
             <div>
-                <h2>{selectedUser.fullName}</h2>
-                <p>{isOnline ? "Active":"Offline"}</p>
+                <h2>{selectedUser?.fullName}</h2>
+                {/* <p>{isOnline ? "Active":"Offline"}</p> */}
             </div>
 
             <div>
                 {messages.map((message)=>{
-                    const isSender=message.senderId===authUser._id
+                    console.log(authUser?.id);
+                    
+                    const isSender=message.senderId===authUser?.id
                     const messageDate=new Date(message.createdAt).toDateString()
                     const showDivider=messageDate!==lastDate
                     lastDate=messageDate
-                    console.log(isSender);
+                    
                     
                     const repliedMessage=message.replyTo ? findRepliedMessage(message.replyTo):null
                     const isEditing=editMessageId===message._id
@@ -145,8 +148,8 @@ const ChatContainer=()=>{
                             <div onDoubleClick={()=> handleReplyClick(message)}>
                                 {!isSender && (
                                     <img
-                                    src={selectedUser.profilePic||"/avatar-placeholder.png"}
-                                    alt={selectedUser.fullName}
+                                    src={selectedUser?.profilePic||"/avatar-placeholder.png"}
+                                    alt={selectedUser?.fullName}
                                     />
                                     )}
                             
@@ -156,7 +159,7 @@ const ChatContainer=()=>{
                                     {repliedMessage && (
                                         <div>
                                             <span>
-                                                {repliedMessage.senderId===authUser._id ? "You":selectedUser.fullName}
+                                                {repliedMessage.senderId===authUser?.id ? "You":selectedUser?.fullName}
                                             </span>
                                             <p>{repliedMessage.text}</p>
                                         </div>
@@ -188,7 +191,7 @@ const ChatContainer=()=>{
                                     {message.reactions?.length>0&&(
                                         <div>
                                             {message.reactions.map((r)=>(
-                                                <span key={r.userId + r.emoji} title={r.userId === authUser._id ? "You":""}>
+                                                <span key={r.userId + r.emoji} title={r.userId === authUser?.id ? "You":""}>
                                                     {r.emoji}
                                                 </span>
                                             ))}
@@ -206,7 +209,7 @@ const ChatContainer=()=>{
                                             </button>
                                             <button 
                                                 type="button"
-                                                onClick={()=> setReactionPickerFor(reactionPickerFor===message.id?null:message._id)}>
+                                                onClick={()=> setReactionPickerFor(reactionPickerFor===message._id?null:message._id)}>
                                                     React
                                             </button>
                                             <button type="button" onClick={()=>handleDeleteForMe(message._id)}>
@@ -238,7 +241,7 @@ const ChatContainer=()=>{
 
                                 {isSender && (
                                     <img
-                                    src={authUser.profilePic||"/avatar-placeholder.png"}
+                                    src={authUser?.profilePic||"/avatar-placeholder.png"}
                                     alt="me"
                                     />
                                 )}
@@ -263,7 +266,7 @@ const ChatContainer=()=>{
                 <div>
                     <div>
                         <span>
-                            Replying to {replyingTo.senderId===authUser._id ? "Yourself":selectedUser.fullName}
+                            Replying to {replyingTo.senderId===authUser?.id ? "Yourself":selectedUser?.firstName}
                         </span>
                         <p>{replyingTo.text}</p>
                     </div>
