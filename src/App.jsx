@@ -27,20 +27,10 @@ const App = () => {
     <div>
       <Navbar />
       <Routes>
-        <Route
-          path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/login"
-          element={!authUser ? <LogInPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-        />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/" element={authUser?<HomePage />:<Navigate to="/login" />} />
+        <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
+        <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
         <Route
           path="/verify-email/:token"
           element={<div>Verify Email Page</div>}

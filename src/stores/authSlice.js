@@ -152,7 +152,7 @@ export const authSlice = createSlice({
         state.isCheckingAuth = true;
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
-        state.authUser = action.payload;
+        state.authUser = action.payload.user;
         state.isCheckingAuth = false;
       })
       .addCase(checkAuth.rejected, (state) => {
@@ -179,7 +179,6 @@ export const authSlice = createSlice({
       })
 
       .addCase(signup.fulfilled, (state, action) => {
-        state.authUser = action.payload;
         state.isSigningUp = false;
       })
 
