@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Plus } from "lucide-react";
+import { UserPlus,Search } from "lucide-react";
 import { setSelectedUser } from "../../stores/chatSlice.js";
 import UserListItem from "./UserListItem.jsx";
 import NewChatModel from "./NewChatModel.jsx";
@@ -11,11 +11,20 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
 
   return (
-    <aside>
-      <div>
-        <h2>Chats</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input type="text" placeholder="Search users..." />
+    <aside data-theme="corporate" className="w-72 h-screen bg-base-100 border-r border-base-300 flex flex-col">
+      <div className="p-4">
+        <h2 className="text-3xl font-normal text-center mb-4">Chats</h2>
+        
+        <div style={{ display: "flex", alignItems: "center"}}>
+
+          <label className="flex items-center w-full h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
+  <input
+    type="text"
+    placeholder="Search users..."
+    className="flex-1 bg-transparent outline-none placeholder:text-gray-500"
+  />
+  <Search size={18} className="text-gray-500" />
+</label>
           <button
             onClick={() => setShowNewChatModal(true)}
             title="Start new chat"
@@ -30,25 +39,40 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
               cursor: "pointer",
             }}
           >
-            <Plus size={20} />
+            <UserPlus size={30}/>
           </button>
         </div>
       </div>
 
-      <div>
+      <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
         {users.map((user) => (
-          <UserListItem
-            key={user._id}
-            user={user}
-            isActive={selectedUser?._id === user._id}
-            isOnline={onlineUsers.includes(user._id)}
-            onClick={() => dispatch(setSelectedUser(user))}
-          />
+        <button
+  key={user._id}
+  onClick={() => dispatch(setSelectedUser(user))}
+  className={`group w-full rounded-xl border transition-all duration-200 ${
+    selectedUser?._id === user._id
+      ? "bg-gray-500 border-gray-500 hover:!bg-gray-700"
+      : "bg-base-100 border-base-200 hover:bg-base-300"
+  }`}
+>
+  <div
+    className={`p-4 text-left transition-colors duration-200 ${
+      selectedUser?._id === user._id
+        ? "text-white group-hover:text-white"
+        : "text-black"
+    }`}
+  >
+    <UserListItem
+      user={user}
+      isOnline={onlineUsers.includes(user._id)}
+    />
+  </div>
+</button>
         ))}
       </div>
 
-      <div>
-        <span>{currentUser?.firstName} {currentUser?.lastName}</span>
+       <div className="border-t border-base-300 p-4 text-center font-medium">
+        {currentUser?.firstName} {currentUser?.lastName}
       </div>
 
       {showNewChatModal && (
