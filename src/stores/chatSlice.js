@@ -96,7 +96,7 @@ export const reactToMessage = createAsyncThunk(
   "chat/reactToMessage",
   async ({ messageId, emoji }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post("/messages/react/${messageId", {
+      const res = await axiosInstance.post(`/messages/react/${messageId}`, {
         emoji,
       });
       return res.data;

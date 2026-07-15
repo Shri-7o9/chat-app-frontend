@@ -129,7 +129,14 @@ const ChatContainer=()=>{
 
             <div>
                 {messages.map((message)=>{
-                    const isSender=message.senderId===authUser._id
+                    const isSender = message.senderId === authUser._id
+                        console.log("DEBUG:", {
+                        senderId: message.senderId,
+                        senderIdType: typeof message.senderId,
+                        authUserId: authUser._id,
+                        authUserIdType: typeof authUser._id,
+                        isSender
+                        })  
                     const messageDate=new Date(message.createdAt).toDateString()
                     const showDivider=messageDate!==lastDate
                     lastDate=messageDate
@@ -206,7 +213,7 @@ const ChatContainer=()=>{
                                             </button>
                                             <button 
                                                 type="button"
-                                                onClick={()=> setReactionPickerFor(reactionPickerFor===message.id?null:message._id)}>
+                                                onClick={()=> setReactionPickerFor(reactionPickerFor===message._id?null:message._id)}>
                                                     React
                                             </button>
                                             <button type="button" onClick={()=>handleDeleteForMe(message._id)}>
@@ -220,7 +227,7 @@ const ChatContainer=()=>{
                                         </div>
                                     )}
 
-                                    {reactionPickerFor===message.id && (
+                                    {reactionPickerFor===message._id && (
                                         <div>
                                             {reactionEmojis.map((emoji)=>(
                                                 <button

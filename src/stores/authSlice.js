@@ -10,7 +10,9 @@ export const checkAuth = createAsyncThunk(
       return res.data;
     } catch (error) {
       console.log("Error in checkAuth:", error);
-      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+      return rejectWithValue(
+        error.response?.data?.message || "Something went wrong",
+      );
     }
   },
 );
@@ -124,7 +126,6 @@ export const authSlice = createSlice({
   },
 
   reducers: {
-
     setUser: (state, action) => {
       state.authUser = action.payload;
     },
@@ -136,14 +137,13 @@ export const authSlice = createSlice({
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
     },
-    
+
     logout: (state) => {
       state.authUser = null;
       state.socket = null;
       state.onlineUsers = [];
     },
     clearAuthError: () => {},
-
   },
   extraReducers: (builder) => {
     builder
@@ -159,16 +159,18 @@ export const authSlice = createSlice({
         state.authUser = null;
         state.isCheckingAuth = false;
       })
-      
+
       //Login
       .addCase(login.pending, (state) => {
         state.isLoggingIn = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authUser = action.payload.user;
+        state.authUser = {
+          ...action.payload.user,
+          _id: action.payload.user.id,
+        };
         state.isLoggingIn = false;
       })
-
       .addCase(login.rejected, (state) => {
         state.isLoggingIn = false;
       })
@@ -187,7 +189,7 @@ export const authSlice = createSlice({
         state.isSigningUp = false;
       })
 
-      //Forget 
+      //Forget
       .addCase(forgetPassword.pending, (state) => {
         state.isSendingResetLink = true;
       })
@@ -210,7 +212,7 @@ export const authSlice = createSlice({
         state.isUpdatingProfile = false;
       })
 
-       // logout
+      // logout
       .addCase(logoutUser.pending, (state) => {
         state.isLoggingIn = true;
       })
@@ -222,8 +224,7 @@ export const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state) => {
         state.isLoggingIn = false;
-      })
-
+      });
   },
 });
 
