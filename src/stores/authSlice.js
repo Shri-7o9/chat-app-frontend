@@ -179,7 +179,6 @@ export const authSlice = createSlice({
       })
 
       .addCase(signup.fulfilled, (state, action) => {
-        state.authUser = action.payload;
         state.isSigningUp = false;
       })
 
