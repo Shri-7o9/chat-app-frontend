@@ -130,13 +130,6 @@ const ChatContainer=()=>{
             <div>
                 {messages.map((message)=>{
                     const isSender = message.senderId === authUser._id
-                        console.log("DEBUG:", {
-                        senderId: message.senderId,
-                        senderIdType: typeof message.senderId,
-                        authUserId: authUser._id,
-                        authUserIdType: typeof authUser._id,
-                        isSender
-                        })  
                     const messageDate=new Date(message.createdAt).toDateString()
                     const showDivider=messageDate!==lastDate
                     lastDate=messageDate
