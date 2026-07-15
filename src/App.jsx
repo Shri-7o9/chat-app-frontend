@@ -30,8 +30,6 @@ const App = () => {
         <Route path="/login" element={!authUser?<LogInPage />:<Navigate to="/" />} />
         <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/" />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
-        <Route path="/login" element={<div>Login Page</div>} />
-        <Route path="/signup" element={<div>Signup Page</div>} />
         <Route
           path="/verify-email/:token"
           element={<div>Verify Email Page</div>}
