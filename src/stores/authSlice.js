@@ -87,8 +87,8 @@ export const updateProfile = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put("/auth/update-profile", {
-        firstName: data.firstName,
-        lastName: data.lastName,
+        fullName: data.fullName,
+        username: data.username,
       });
       toast.success("Profile updated successfully");
       return res.data;

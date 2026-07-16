@@ -10,15 +10,15 @@ const UpdateProfilePage = () => {
   const { isUpdatingProfile, authUser } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
+    username: "",
   });
 
   useEffect(()=>{
     if(authUser){
       setFormData({
-        firstName:authUser.firstName||"",
-        lastName:authUser.lastName||"",
+        fullName:authUser.fullName||"",
+        username:authUser.username||"",
       })
     }
   },[authUser])
@@ -26,15 +26,15 @@ const UpdateProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const trimmedFirstName=formData.firstName.trim()
-    const trimmedLastName=formData.lastName.trim()
+    const trimmedFullName=formData.fullName.trim()
+    const trimmedUsername=formData.username.trim()
 
-    if(!trimmedFirstName||!trimmedLastName){
-      return toast.error("First and last name cannot be empty")
+    if(!trimmedFullName||!trimmedUsername){
+      return toast.error("Full name and username cannot be empty")
     }
 
     try {
-      await dispatch(updateProfile({firstName:trimmedFirstName, lastName:trimmedLastName})).unwrap();
+      await dispatch(updateProfile({fullName:trimmedFullName, username:trimmedUsername})).unwrap();
       navigate("/");
     } catch (error) {
       console.log("Update failed", error);
@@ -47,25 +47,25 @@ const UpdateProfilePage = () => {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>First Name</label>
+          <label>Full Name</label>
           <input
             type="text"
-            placeholder="Enter your first name"
-            value={formData.firstName}
+            placeholder="Enter your full name"
+            value={formData.fullName}
             onChange={(e) =>
-              setFormData({ ...formData, firstName: e.target.value })
+              setFormData({ ...formData, fullName: e.target.value })
             }
           />
         </div>
 
         <div>
-          <label>Last Name</label>
+          <label>Username</label>
           <input
             type="text"
-            placeholder="Enter your last name"
-            value={formData.lastName}
+            placeholder="Enter your username"
+            value={formData.username}
             onChange={(e) =>
-              setFormData({ ...formData, lastName: e.target.value })
+              setFormData({ ...formData, username: e.target.value })
             }
           />
         </div>
