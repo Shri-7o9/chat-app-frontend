@@ -6,8 +6,8 @@ export default function MessageBubble({ message, isOwn }) {
       <div
         className={`max-w-[70%] px-4 py-3 rounded-2xl break-words shadow-sm
           ${isOwn 
-            ? 'bg-blue-600 text-white rounded-br-none' 
-            : 'bg-zinc-700 text-white rounded-bl-none'
+            ? 'bg-indigo-50 text-black rounded-br-none' 
+            : 'bg-gray-500 text-white rounded-bl-none'
           }`}
       >
         {message.image && (
