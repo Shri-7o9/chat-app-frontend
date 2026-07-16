@@ -18,14 +18,11 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   console.log(authUser);
   return (
     <>
-      <div
-        className="navbar bg-base-100 shadow-lg"
-        data-theme="corporate"
-      >
+      <div className="navbar bg-base-100 shadow-lg" data-theme="corporate">
         <nav className="flex items-center justify-between w-full px-4">
           {/* Logo */}
           <Link
@@ -46,18 +43,22 @@ const Navbar = () => {
           {!authUser && (
             <div className="flex gap-3">
               <Link to="/login">
-              <a className="btn rounded-full text-primary border-primary bg-transparent
+                <a
+                  className="btn rounded-full text-primary border-primary bg-transparent
                      hover:bg-primary hover:text-primary-content hover:scale-110
-                     transition-all duration-300">
-                Login
-              </a>
+                     transition-all duration-300"
+                >
+                  Login
+                </a>
               </Link>
               <Link to="/signup">
-              <a className="btn rounded-full text-secondary border border-secondary bg-transparent
+                <a
+                  className="btn rounded-full text-secondary border border-secondary bg-transparent
                      hover:bg-secondary hover:text-secondary-content hover:scale-110
-                     transition-all duration-300">
-                Sign Up
-              </a>
+                     transition-all duration-300"
+                >
+                  Sign Up
+                </a>
               </Link>
             </div>
           )}
@@ -93,14 +94,19 @@ const Navbar = () => {
                     <button
                       className="flex items-center gap-2 text-error"
                       onClick={() =>
-                        document
-                          .getElementById("logout_modal")
-                          .showModal()
+                        document.getElementById("logout_modal").showModal()
                       }
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
                     </button>
+                  </li>
+
+                  <li>
+                    <Link to="/profile">Update Profile</Link>
+                  </li>
+                  <li>
+                    <Link to="/change-password">Change Password</Link>
                   </li>
                 </ul>
               </div>
