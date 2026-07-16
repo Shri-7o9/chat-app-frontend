@@ -68,9 +68,7 @@ const SignUpPage = () => {
     const errors = validate();
     setFormErrors(errors);
 
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
+    if (Object.keys(errors).length > 0) return;
 
     try {
       await dispatch(signup(formData)).unwrap();
@@ -81,129 +79,189 @@ const SignUpPage = () => {
   };
 
   return (
-    <div>
-      <Navbar/>
-      <h1>Sign Up</h1>
+    <div className="min-h-screen bg-base-200" data-theme="corporate">
+      <div className="flex justify-center py-15 px-100">
+        <div className="card card-body p-5 bg-white shadow-xl rounded-2xl ">
+           
+          <div className="card-body p-10">
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="firstName">Full Name</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-          {formErrors.firstName && <p>{formErrors.firstName}</p>}
+            <h2 className="text-4xl font-bold text-center text-black">
+              Get started with
+              <br />
+              <span>
+                Chat<span className="text-blue-600">App</span>
+              </span>
+            </h2>
+
+            <form onSubmit={handleSubmit}>
+           
+<div className="mt-8">
+  <label className="label">
+    <span className="label-text font-semibold text-primary w-100">
+      Full Name
+    </span>
+  </label>
+
+  <input
+    type="text"
+    name="firstName"
+    value={formData.firstName}
+    onChange={handleChange}
+    placeholder="Enter your full name"
+    className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full"
+  />
+
+  {formErrors.firstName && (
+    <p className="text-red-500 text-sm mt-1">
+      {formErrors.firstName}
+    </p>
+  )}
+</div>
+
+<div className="mt-4">
+  <label className="label">
+    <span className="label-text font-semibold text-primary">
+      User Name
+    </span>
+  </label>
+
+  <input
+    type="text"
+    name="lastName"
+    value={formData.lastName}
+    onChange={handleChange}
+    placeholder="Enter your user name"
+    className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full"
+  />
+
+  {formErrors.lastName && (
+    <p className="text-red-500 text-sm mt-1">
+      {formErrors.lastName}
+    </p>
+  )}
+</div>
+
+<div className="mt-4">
+  <label className="label">
+    <span className="label-text font-semibold text-primary">
+      Email
+    </span>
+  </label>
+
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    placeholder="Enter your email"
+    className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full"
+  />
+
+  {formErrors.email && (
+    <p className="text-red-500 text-sm mt-1">
+      {formErrors.email}
+    </p>
+  )}
+</div>
+
+<div className="mt-4">
+  <label className="label">
+    <span className="label-text font-semibold text-primary">
+      Password
+    </span>
+  </label>
+
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="Enter your password"
+      className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full pr-12"
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+    >
+      {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+    </button>
+  </div>
+
+  {formErrors.password && (
+    <p className="text-red-500 text-sm mt-1">
+      {formErrors.password}
+    </p>
+  )}
+</div>
+
+<div className="mt-4">
+  <label className="label">
+    <span className="label-text font-semibold text-primary">
+      Confirm Password
+    </span>
+  </label>
+
+  <div className="relative">
+    <input
+      type={showConfirmPassword ? "text" : "password"}
+      name="confirmPassword"
+      value={formData.confirmPassword}
+      onChange={handleChange}
+      placeholder="Confirm your password"
+      className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full pr-12"
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+    >
+      {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+    </button>
+  </div>
+
+  {formErrors.confirmPassword && (
+    <p className="text-red-500 text-sm mt-1">
+      {formErrors.confirmPassword}
+    </p>
+  )}
+</div>
+            {serverError && (
+              <p className="text-red-500 text-center mt-4">
+                {serverError}
+              </p>
+            )}
+
+            <div className="flex justify-center mt-6">
+              <button
+                type="submit"
+                disabled={isSigningUp}
+                className="btn btn-secondary w-full rounded-full hover:scale-105 transition"
+              >
+                {isSigningUp ? "Signing up..." : "Sign Up"}
+              </button>
+            </div>
+
+            <p className="text-center mt-6 text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                Login
+              </Link>
+            </p>
+
+          </form>
+
         </div>
-
-        <div>
-          <label htmlFor="lastName">User Name</label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-          />
-          {formErrors.lastName && <p>{formErrors.lastName}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {formErrors.email && <p>{formErrors.email}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="password">Password</label>
-          <div style={{ position: "relative", display: "inline-block" }}>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              style={{ paddingRight: "36px" }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              style={{
-                position: "absolute",
-                right: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {formErrors.password && <p>{formErrors.password}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <div style={{ position: "relative", display: "inline-block" }}>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              style={{ paddingRight: "36px" }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              aria-label={
-                showConfirmPassword ? "Hide password" : "Show password"
-              }
-              style={{
-                position: "absolute",
-                right: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {formErrors.confirmPassword && <p>{formErrors.confirmPassword}</p>}
-        </div>
-
-        {serverError && <p>{serverError}</p>}
-
-        <button type="submit" disabled={isSigningUp}>
-          {isSigningUp ? "Signing up..." : "Sign Up"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default SignUpPage;

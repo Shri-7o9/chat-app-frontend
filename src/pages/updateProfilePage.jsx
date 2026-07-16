@@ -42,40 +42,60 @@ const UpdateProfilePage = () => {
   };
 
   return (
+    
     <div>
-      <h1>Update Profile</h1>
+      <div data-theme="corporate" className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="card h-200 w-600 max-w-lg bg-base-100 border-base-300 border-rounded shadow-md ">
+          <div className="card-body px-8 py-45">
+            <h1 className="text-4xl text-center text-primary">Update Profile </h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Full Name</label>
-          <input
-            type="text"
-            placeholder="Enter your full name"
-            value={formData.fullName}
-            onChange={(e) =>
-              setFormData({ ...formData, fullName: e.target.value })
-            }
-          />
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.fullName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fullName: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label>Username</label>
+                <input
+                  type="text"
+                  placeholder="Enter your last name"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-center mt-7">
+                <button
+                  type="submit"
+                  className="btn rounded-full bg-transparent border-primary text-primary hover:scale-110 transition-all duration-300"
+                  disabled={isUpdatingProfile}
+                >
+                  {isUpdatingProfile ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+
+            <div className="flex justify-center mt-3">
+              <button
+                type="button"
+                onClick={() => navigate("/")}
+                className="btn rounded-full bg-transparent border-primary text-primary  hover:scale-110 transition-all duration-300"
+              >
+                Back
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <label>Username</label>
-          <input
-            type="text"
-            placeholder="Enter your username"
-            value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
-          />
-        </div>
-
-        <button type="submit" disabled={isUpdatingProfile}>
-          {isUpdatingProfile ? "Saving..." : "Save Changes"}
-        </button>
-      </form>
-
-      <button onClick={() => navigate("/")}>Back</button>
+      </div>
     </div>
   );
 };
