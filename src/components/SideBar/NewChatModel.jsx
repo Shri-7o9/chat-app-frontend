@@ -4,40 +4,71 @@ import { Search, X, UserPlus, Check } from "lucide-react";
 import { addConnection } from "../../stores/chatSlice.js";
 import { axiosInstance } from "../../libs/axios.js";
 
-export default function NewChatModal({ onClose }) {
+// FIX: Added 'onUserAdded' to the props destructured here
+export default function NewChatModal({ onClose, onUserAdded }) {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (query.trim().length === 0) {
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    
+    if (!value.trim()) {
       setResults([]);
-      return;
+      setLoading(false);
     }
-    setLoading(true);
-    const timeout = setTimeout(async () => {
+  };
+
+  useEffect(() => {
+    if (!query.trim()) return;
+
+    const controller = new AbortController();
+
+    const searchUsers = async () => {
+      setLoading(true);
       try {
         const res = await axiosInstance.get(
-          `/users/search?q=${encodeURIComponent(query.trim())}`
+          `/auth/search?q=${encodeURIComponent(query.trim())}`,
+          { signal: controller.signal }
         );
-        setResults(res.data);
+        setResults(res.data.users || []);
       } catch (error) {
-        console.log("Error searching users:", error.message);
-        setResults([]);
+        if (error.name !== "CanceledError" && !axiosInstance.isCancel(error)) {
+          console.error("Error searching users:", error.message);
+          setResults([]);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
-    }, 350);
-    return () => clearTimeout(timeout);
+    };
+
+    const timeout = setTimeout(() => {
+      searchUsers();
+    }, 350); 
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [query]);
 
   const handleAddUser = async (user) => {
     try {
       await dispatch(addConnection(user._id)).unwrap();
+      
+      // Update local modal state to show "Added" checkmark
       setResults((prev) =>
         prev.map((u) => (u._id === user._id ? { ...u, alreadyAdded: true } : u))
       );
+
+      // FIX: Trigger the sidebar to instantly re-fetch its list from the server
+      if (onUserAdded) {
+        onUserAdded();
+      }
     } catch (error) {
       console.log("Error adding user:", error);
     }
@@ -88,15 +119,16 @@ export default function NewChatModal({ onClose }) {
           <input
             autoFocus
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search by name or username..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={handleInputChange}
             style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "#fff" }}
           />
         </div>
 
         <div style={{ overflowY: "auto" }}>
           {loading && <p>Searching...</p>}
+          
           {!loading && query.trim().length > 0 && results.length === 0 && (
             <p>No users found.</p>
           )}
@@ -110,20 +142,24 @@ export default function NewChatModal({ onClose }) {
                 >
                   <img
                     src={user.profilePic || "/avatar.png"}
-                    alt={user.firstName}
-                    style={{ width: 36, height: 36, borderRadius: "50%" }}
+                    alt={user.fullName || "Avatar"}
+                    style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover" }}
                   />
-                  <span style={{ flex: 1 }}>
-                    {user.firstName} {user.lastName}
-                  </span>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: "14px", fontWeight: "500" }}>{user.fullName}</span>
+                    {user.userName && (
+                      <span style={{ fontSize: "12px", color: "#aaa" }}>@{user.userName}</span>
+                    )}
+                  </div>
+
                   {user.alreadyAdded ? (
-                    <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#4ade80" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#4ade80", fontSize: "14px" }}>
                       <Check size={16} /> Added
                     </span>
                   ) : (
                     <button
                       onClick={() => handleAddUser(user)}
-                      style={{ display: "flex", alignItems: "center", gap: "4px", background: "#4f46e5", border: "none", color: "#fff", borderRadius: "6px", padding: "6px 10px", cursor: "pointer" }}
+                      style={{ display: "flex", alignItems: "center", gap: "4px", background: "#4f46e5", border: "none", color: "#fff", borderRadius: "6px", padding: "6px 10px", cursor: "pointer", fontSize: "14px" }}
                     >
                       <UserPlus size={16} /> Add
                     </button>

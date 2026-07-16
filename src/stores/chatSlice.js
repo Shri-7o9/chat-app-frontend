@@ -48,17 +48,21 @@ export const sendMessage = createAsyncThunk(
     }
   },
 );
+
+// Inside your chatSlice.js
 export const addConnection = createAsyncThunk(
   "chat/addConnection",
-  async (userId, { rejectWithValue }) => {
+  async (targetUserId, thunkAPI) => {
     try {
-      const res = await axiosInstance.post(`/connections/add/${userId}`);
-      return res.data;
+      // Sends the target user's ID in the request body
+      const response = await axiosInstance.post("/auth/connect", { targetUserId });
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
+
 
 const initialState = {
   users: [],

@@ -1,19 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Plus } from "lucide-react";
 import { setSelectedUser } from "../../stores/chatSlice.js";
+import { axiosInstance } from "../../libs/axios.js";
 import UserListItem from "./UserListItem.jsx";
 import NewChatModal from "./NewChatModel.jsx";
 
-export default function Sidebar({ users, currentUser, selectedUser }) {
+export default function Sidebar({ currentUser, selectedUser }) {
   const dispatch = useDispatch();
   const onlineUsers = useSelector((state) => state.auth.onlineUsers) || [];
+  
+  const [connections, setConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [query, setQuery] = useState("");
 
-  // filters your EXISTING contacts only
-  const filteredUsers = users.filter((u) =>
-    `${u.firstName} ${u.lastName}`.toLowerCase().includes(query.trim().toLowerCase())
+  // Wrapped in useCallback so it's a stable dependency we can pass down safely
+  const fetchConnections = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get("/auth/sidebar");
+      setConnections(res.data);
+    } catch (error) {
+      console.error("Error fetching sidebar connections:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initFetch = async () => {
+      try {
+        const res = await axiosInstance.get("/auth/sidebar");
+        if (isMounted) setConnections(res.data);
+      } catch (error) {
+        console.error("Error on mount fetch:", error.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    initFetch();
+    return () => { isMounted = false; };
+  }, []);
+
+  const filteredUsers = connections.filter((u) =>
+    `${u.fullName}`.toLowerCase().includes(query.trim().toLowerCase())
   );
 
   return (
@@ -23,7 +56,7 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search active chats..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -47,7 +80,15 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
       </div>
 
       <div>
-        {filteredUsers.map((user) => (
+        {loading && <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>Loading chats...</p>}
+        
+        {!loading && connections.length === 0 && (
+          <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>
+            No active conversations. Click "+" to add someone!
+          </p>
+        )}
+
+        {!loading && filteredUsers.map((user) => (
           <UserListItem
             key={user._id}
             user={user}
@@ -63,7 +104,10 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
       </div>
 
       {showNewChatModal && (
-        <NewChatModal onClose={() => setShowNewChatModal(false)} />
+        <NewChatModal 
+          onClose={() => setShowNewChatModal(false)} 
+          onUserAdded={fetchConnections} // <-- FIX: Passing the refresh function here
+        />
       )}
     </aside>
   );
