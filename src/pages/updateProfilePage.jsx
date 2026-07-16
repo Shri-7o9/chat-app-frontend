@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { updateProfile } from "../stores/authSlice";
+import toast from "react-hot-toast"
 
 const UpdateProfilePage = () => {
   const dispatch = useDispatch();
