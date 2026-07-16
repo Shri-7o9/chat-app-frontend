@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { updateProfile } from "../stores/authSlice";
@@ -6,17 +6,34 @@ import { updateProfile } from "../stores/authSlice";
 const UpdateProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isUpdatingProfile } = useSelector((state) => state.auth);
+  const { isUpdatingProfile, authUser } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
   });
 
+  useEffect(()=>{
+    if(authUser){
+      setFormData({
+        firstName:authUser.firstName||"",
+        lastName:authUser.lastName||"",
+      })
+    }
+  },[authUser])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const trimmedFirstName=formData.firstName.trim()
+    const trimmedLastName=formData.lastName.trim()
+
+    if(!trimmedFirstName||!trimmedLastName){
+      return toast.error("First and last name cannot be empty")
+    }
+
     try {
-      await dispatch(updateProfile(formData)).unwrap();
+      await dispatch(updateProfile({firstName:trimmedFirstName, lastName:trimmedLastName})).unwrap();
       navigate("/");
     } catch (error) {
       console.log("Update failed", error);
