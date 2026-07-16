@@ -11,7 +11,7 @@ export default function Sidebar({ users, currentUser, selectedUser }) {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
 
   return (
-    <aside data-theme="corporate" className="w-72 h-screen bg-base-100 border-r border-base-300 flex flex-col">
+    <aside data-theme="corporate" className="w-75 h-190 bg-base-100 border-r border-base-300 flex flex-col">
       <div className="p-4">
         <h2 className="text-3xl font-normal text-center mb-4">Chats</h2>
         
