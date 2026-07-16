@@ -6,7 +6,8 @@ import ChatHeader from "./ChatHeader.jsx";
 import MessageList from "./MessageList.jsx";
 import MessageInput from "./MessageInput.jsx";
 
-export default function ChatWindow({ selectedUser, currentUser }) {
+export default function ChatWindow() {
+    const { users, selectedUser } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const onlineUsers = useSelector((state) => state.auth.onlineUsers);
 
@@ -26,12 +27,14 @@ export default function ChatWindow({ selectedUser, currentUser }) {
   }
 
   return (
-    <div className="flex flex-1 flex-col min-h-0">
+    
+    <div className="flex flex-1 flex-col min-h-0"
+    data-theme="corporate">
       <ChatHeader
         user={selectedUser}
         isOnline={onlineUsers.includes(selectedUser._id)}
       />
-      <MessageList selectedUser={selectedUser} currentUser={currentUser} />
+      <MessageList/>
       <MessageInput selectedUser={selectedUser} />
     </div>
   );
