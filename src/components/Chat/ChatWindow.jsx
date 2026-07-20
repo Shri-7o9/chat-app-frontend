@@ -1,19 +1,21 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MessageSquare } from "lucide-react";
-import { getMessages } from "../../stores/chatSlice.js";
+import { getMessages, markMessagesAsRead } from "../../stores/chatSlice.js";
 import ChatHeader from "./ChatHeader.jsx";
 import MessageList from "./MessageList.jsx";
 import MessageInput from "./MessageInput.jsx";
+import ForwardModal from "../ForwardModal.jsx";
 
 export default function ChatWindow() {
-    const { users, selectedUser } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
-  const onlineUsers = useSelector((state) => state.auth.onlineUsers);
+  const { selectedUser } = useSelector((state) => state.chat);
+  const { onlineUsers } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (selectedUser?._id) {
       dispatch(getMessages(selectedUser._id));
+      dispatch(markMessagesAsRead(selectedUser._id));
     }
   }, [selectedUser?._id, dispatch]);
 
@@ -27,15 +29,14 @@ export default function ChatWindow() {
   }
 
   return (
-    
-    <div className="flex flex-1 flex-col min-h-0"
-    data-theme="corporate">
+    <div className="flex flex-1 flex-col min-h-0" data-theme="corporate">
       <ChatHeader
         user={selectedUser}
         isOnline={onlineUsers.includes(selectedUser._id)}
       />
-      <MessageList/>
+      <MessageList />
       <MessageInput selectedUser={selectedUser} />
+      <ForwardModal />
     </div>
   );
 }
