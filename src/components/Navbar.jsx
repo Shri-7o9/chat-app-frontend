@@ -21,10 +21,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div
-        className="navbar bg-base-100 shadow-lg"
-        data-theme="corporate"
-      >
+      <div className="navbar bg-base-100 shadow-lg" data-theme="corporate">
         <nav className="flex items-center justify-between w-full px-4">
           {/* Logo */}
           <Link
@@ -45,18 +42,22 @@ const Navbar = () => {
           {!authUser && (
             <div className="flex gap-3">
               <Link to="/login">
-              <a className="btn rounded-full text-primary border-primary bg-transparent
+                <a
+                  className="btn rounded-full text-primary border-primary bg-transparent
                      hover:bg-primary hover:text-primary-content hover:scale-110
-                     transition-all duration-300">
-                Login
-              </a>
+                     transition-all duration-300"
+                >
+                  Login
+                </a>
               </Link>
               <Link to="/signup">
-              <a className="btn rounded-full text-secondary border border-secondary bg-transparent
+                <a
+                  className="btn rounded-full text-secondary border border-secondary bg-transparent
                      hover:bg-secondary hover:text-secondary-content hover:scale-110
-                     transition-all duration-300">
-                Sign Up
-              </a>
+                     transition-all duration-300"
+                >
+                  Sign Up
+                </a>
               </Link>
             </div>
           )}
@@ -92,7 +93,15 @@ const Navbar = () => {
                 Update Profile
               </Link>
             </li>
+              <li>  
+                 <Link
+                to="/change-password"
+                className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
+                >
+                Change Password
+              </Link>
 
+              </li>
             <li>
               <button
                 className="flex items-center gap-2 text-error bg-gray-300 hover:text-white hover:bg-red-300 transition-all duration-200 hover:scale-105 font-semibold"
