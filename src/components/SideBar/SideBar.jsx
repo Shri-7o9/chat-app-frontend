@@ -89,109 +89,105 @@ export default function Sidebar({ currentUser, selectedUser }) {
   );
 
   return (
-    <aside data-theme="corporate" className="w-75 h-190 bg-base-100 border-r border-base-300 flex flex-col">
-      <div className="p-4">
+   <aside
+  data-theme="corporate"
+  className="w-[300px] min-w-[300px] flex-shrink-0 h-full bg-base-200 border-r border-base-300 flex flex-col"
+>
+      <div className="p-4 ">
         <h2 className="text-3xl font-normal text-center mb-4">Chats</h2>
         
-        <div style={{ display: "flex", alignItems: "center"}}>
+        <div className="flex items-center gap-1 w-full">
 
-          <label className="flex items-center w-full h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
+         <label className="flex flex-1 min-w-0 items-center h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
   <input
             type="text"
             placeholder="Search active chats..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ flex: 1, padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", background: "transparent", color: "#fff", outline: "none" }}
+            style={{ flex:1, padding: "8px 15px", background:"transparent", color: "#fff", outline: "none" }}
           />
   <Search size={18} className="text-gray-500" />
 </label>
-          <button
-            onClick={() => setShowNewChatModal(true)}
-            title="Add new user"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px",
-              borderRadius: "50%",
-              border: "none",
-              background: "#4f46e5",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-          >
-            <Plus size={18} />
-          </button>
+      <button
+  onClick={() => setShowNewChatModal(true)}
+  title="Add new user"
+  className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-110 transition-all duration-300 flex-shrink-0"
+>
+  <Plus size={20} />
+</button>
         </div>
       </div>
 
       {/* Active Chats scroll section area */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {loading && <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>Loading chats...</p>}
-        
-        {!loading && connections.length === 0 && (
-          <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>
-            No active conversations. Click "+" to add someone!
-          </p>
-        )}
+      {/* Active Chats scroll section area */}
+<div style={{ flex: 1, overflowY: "auto" }}>
+  {loading && (
+    <p className="p-3 text-sm text-gray-400">
+      Loading chats...
+    </p>
+  )}
 
-        {!loading && filteredUsers.map((user) => (
-          <div 
-            key={user._id} 
-            className="sidebar-row-item"
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "8px", transition: "background 0.2s" }}
-          >
-            {/* List Row component wrapper trigger selection context */}
-            <div style={{ flex: 1 }}>
-              <UserListItem
-                user={user}
-                isActive={selectedUser?._id === user._id}
-                isOnline={onlineUsers.includes(user._id)}
-                onClick={() => dispatch(setSelectedUser(user))}
-              />
-            </div>
+  {!loading && connections.length === 0 && (
+    <p className="p-3 text-sm text-gray-400">
+      No active conversations. Click "+" to add someone!
+    </p>
+  )}
 
-            {/* Red delete disconnect target trigger action option element button */}
-            <button
-              onClick={(e) => handleRemoveUser(e, user._id)}
-              title="Remove Chat"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#ef4444",
-                cursor: "pointer",
-                padding: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "6px",
-                opacity: 0.7,
-                transition: "opacity 0.2s, background 0.2s"
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.background = "#2d2d2d"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.7"; e.currentTarget.style.background = "transparent"; }}
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Footer profiling current session layout */}
-      {/* <div style={{ paddingTop: "12px", borderTop: "1px solid #333", marginTop: "auto" }}>
-        <span style={{ fontSize: "14px", color: "#aaa" }}>Logged in as:</span>
-        <div style={{ fontWeight: "600", fontSize: "15px", marginTop: "2px" }}>
-          {currentUser?.fullName}
+  {!loading &&
+    filteredUsers.map((user) => (
+      <div
+        key={user._id}
+        className={`flex items-center justify-between mx-2 my-2 p-2 rounded-xl transition-all duration-200 ${
+          selectedUser?._id === user._id
+            ? "bg-gray-500 text-white"
+            : "bg-base-300 hover:bg-gray-600 text-white"
+        }`}
+      >
+        <div className="flex-1">
+          <UserListItem
+            user={user}
+            isActive={selectedUser?._id === user._id}
+            isOnline={onlineUsers.includes(user._id)}
+            onClick={() => dispatch(setSelectedUser(user))}
+          />
         </div>
-      </div> */}
 
-      {/* Global query popup modal layout visibility toggler */}
-      {showNewChatModal && (
-        <NewChatModal 
-          onClose={handleModalClose} 
-          onUserAdded={fetchConnections}
-        />
-      )}
-    </aside>
-  );
-}
+        <button
+          onClick={(e) => handleRemoveUser(e, user._id)}
+          title="Remove Chat"
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#ef4444",
+            cursor: "pointer",
+            padding: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "6px",
+            opacity: 0.7,
+            transition: "opacity 0.2s, background 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.background = "#2d2d2d";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "0.7";
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+    ))}
+</div>
+
+{showNewChatModal && (
+  <NewChatModal
+    onClose={handleModalClose}
+    onUserAdded={fetchConnections}
+  />
+)}
+</aside>
+)}
