@@ -177,7 +177,7 @@ export default function Sidebar({ currentUser, selectedUser }) {
       <div style={{ paddingTop: "12px", borderTop: "1px solid #333", marginTop: "auto" }}>
         <span style={{ fontSize: "14px", color: "#aaa" }}>Logged in as:</span>
         <div style={{ fontWeight: "600", fontSize: "15px", marginTop: "2px" }}>
-          {currentUser?.firstName} {currentUser?.lastName}
+          {currentUser?.fullName}
         </div>
       </div>
 
