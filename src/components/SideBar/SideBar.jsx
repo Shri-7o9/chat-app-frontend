@@ -178,12 +178,12 @@ export default function Sidebar({ currentUser, selectedUser }) {
       </div>
 
       {/* Footer profiling current session layout */}
-      <div style={{ paddingTop: "12px", borderTop: "1px solid #333", marginTop: "auto" }}>
+      {/* <div style={{ paddingTop: "12px", borderTop: "1px solid #333", marginTop: "auto" }}>
         <span style={{ fontSize: "14px", color: "#aaa" }}>Logged in as:</span>
         <div style={{ fontWeight: "600", fontSize: "15px", marginTop: "2px" }}>
           {currentUser?.fullName}
         </div>
-      </div>
+      </div> */}
 
       {/* Global query popup modal layout visibility toggler */}
       {showNewChatModal && (
