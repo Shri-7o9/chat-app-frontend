@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../stores/chatSlice.js";
 
-import Navbar from "../components/Navbar";
 import Sidebar from "../components/SideBar/SideBar.jsx";
 import ChatWindow from "../components/Chat/ChatWindow.jsx";
 
@@ -17,7 +16,6 @@ const HomePage = () => {
 
   return (
     <div>
-       <Navbar/>
   <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
       {/* Left side Sidebar fixed width */}
       <div style={{ width: "300px", flexShrink: 0 }}>
@@ -28,7 +26,7 @@ const HomePage = () => {
         />
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
+        <ChatWindow />
       </div>
     </div>
     </div>

@@ -80,28 +80,31 @@ const Navbar = () => {
                   <Settings className="w-6 h-6" />
                 </div>
 
-                <ul
-                  tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-                >
-                  <li>
-                    <Link to="/profile">Update Profile</Link>
-                  </li>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow border border-gray-300 space-y-1"
+          >
+            <li>
+              <Link
+                to="/profile"
+                className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                Update Profile
+              </Link>
+            </li>
 
-                  <li>
-                    <button
-                      className="flex items-center gap-2 text-error"
-                      onClick={() =>
-                        document
-                          .getElementById("logout_modal")
-                          .showModal()
-                      }
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
-                  </li>
-                </ul>
+            <li>
+              <button
+                className="flex items-center gap-2 text-error bg-gray-300 hover:text-white hover:bg-red-300 transition-all duration-200 hover:scale-105 font-semibold"
+                onClick={() =>
+                  document.getElementById("logout_modal").showModal()
+                }
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </li>
+          </ul>
               </div>
             </div>
           )}

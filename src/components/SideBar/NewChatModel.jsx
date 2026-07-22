@@ -11,6 +11,7 @@ export default function NewChatModal({ onClose, onUserAdded }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // 1. Handle user typing and instantly reset UI if empty
   const handleInputChange = (e) => {
     const value = e.target.value;
     setQuery(value);
@@ -22,6 +23,7 @@ export default function NewChatModal({ onClose, onUserAdded }) {
   };
 
   useEffect(() => {
+    // 2. Terminate effect immediately if there is no text
     if (!query.trim()) return;
 
     const controller = new AbortController();
@@ -33,8 +35,13 @@ export default function NewChatModal({ onClose, onUserAdded }) {
           `/auth/search?q=${encodeURIComponent(query.trim())}`,
           { signal: controller.signal }
         );
+        
+        // FIX: Extract the 'users' array from your backend object wrapper
+        // Fallback to an empty array [] if for some reason it's missing
         setResults(res.data.users || []);
+        
       } catch (error) {
+        // Prevent clearing state if the user simply typed another character
         if (error.name !== "CanceledError" && !axiosInstance.isCancel(error)) {
           console.error("Error searching users:", error.message);
           setResults([]);
@@ -46,10 +53,12 @@ export default function NewChatModal({ onClose, onUserAdded }) {
       }
     };
 
+    // 3. Debounce: waits 350ms for user to stop typing before calling API
     const timeout = setTimeout(() => {
       searchUsers();
     }, 350); 
 
+    // 4. Cleanup: kills timer and drops late network responses
     return () => {
       clearTimeout(timeout);
       controller.abort();

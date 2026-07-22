@@ -20,8 +20,8 @@ export const signup = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post("/auth/signup", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        fullName: formData.fullName,
+        userName: formData.userName,
         email: formData.email,
         password: formData.password,
       });
@@ -85,8 +85,8 @@ export const updateProfile = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put("/auth/update-profile", {
-        firstName: data.firstName,
-        lastName: data.lastName,
+        fullName: data.fullName,
+        userName: data.userName,
       });
       toast.success("Profile updated successfully");
       return res.data;
@@ -179,7 +179,6 @@ export const authSlice = createSlice({
       })
 
       .addCase(signup.fulfilled, (state, action) => {
-        state.authUser = action.payload;
         state.isSigningUp = false;
       })
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { UserPlus,Search } from "lucide-react";
 import { Plus, Trash2 } from "lucide-react"; // Added Trash2 icon for a cleaner UI look
 import { setSelectedUser } from "../../stores/chatSlice.js";
 import { axiosInstance } from "../../libs/axios.js";
