@@ -17,8 +17,7 @@ const HomePage = () => {
   return (
     <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
       {/* Left side — Sidebar fixed width */}
-      <div style={{ width: "600px", flexShrink: 0 }}>
-        <MessageRequests />
+      <div style={{ width: "300px", flexShrink: 0 }}>
         <Sidebar
           users={users}
           currentUser={currentUser}

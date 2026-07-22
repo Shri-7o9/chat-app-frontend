@@ -102,10 +102,10 @@ export default function Sidebar({ currentUser, selectedUser }) {
          <label className="flex flex-1 min-w-0 items-center h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
   <input
             type="text"
-            placeholder="Search active chats..."
+            placeholder="Search active chats"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ flex:1, padding: "8px 15px", background:"transparent", color: "#fff", outline: "none" }}
+            style={{ flex:1, padding: "8px 15px", background:"transparent", color: "black", outline: "none" }}
           />
            <Search size={18} className="text-gray-500" />
 </label>
