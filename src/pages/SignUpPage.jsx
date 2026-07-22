@@ -11,8 +11,8 @@ const SignUpPage = () => {
   const isSigningUp = useSelector((state) => state.auth.isSigningUp);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
+    userName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -32,12 +32,12 @@ const SignUpPage = () => {
   const validate = () => {
     const errors = {};
 
-    if (!formData.firstName.trim()) {
-      errors.firstName = "Full name is required";
+    if (!formData.fullName.trim()) {
+      errors.fullName = "Full name is required";
     }
 
-    if (!formData.lastName.trim()) {
-      errors.lastName = "User name is required";
+    if (!formData.userName.trim()) {
+      errors.userName = "User name is required";
     }
 
     if (!formData.email.trim()) {
@@ -104,16 +104,16 @@ const SignUpPage = () => {
 
   <input
     type="text"
-    name="firstName"
-    value={formData.firstName}
+    name="fullName"
+    value={formData.fullName}
     onChange={handleChange}
     placeholder="Enter your full name"
     className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full"
   />
 
-  {formErrors.firstName && (
+  {formErrors.fullName && (
     <p className="text-red-500 text-sm mt-1">
-      {formErrors.firstName}
+      {formErrors.fullName}
     </p>
   )}
 </div>
@@ -127,16 +127,16 @@ const SignUpPage = () => {
 
   <input
     type="text"
-    name="lastName"
-    value={formData.lastName}
+    name="userName"
+    value={formData.userName}
     onChange={handleChange}
     placeholder="Enter your user name"
     className="input input-bordered bg-gray-100 text-black placeholder:text-gray-500 border-gray-300 rounded-full w-full"
   />
 
-  {formErrors.lastName && (
+  {formErrors.userName && (
     <p className="text-red-500 text-sm mt-1">
-      {formErrors.lastName}
+      {formErrors.userName}
     </p>
   )}
 </div>

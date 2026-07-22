@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import LogInPage from "./pages/LogInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UpdateProfilePage from "./pages/updateProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -36,13 +37,25 @@ const App = () => {
           element={<div>Verify Email Page</div>}
         />
         <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <UpdateProfilePage />
-            </ProtectedRoute>
-          }
+          path="/reset-password/:token"
+          element={<div>Reset Password Page</div>}
         />
+       <Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <UpdateProfilePage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/change-password"
+  element={
+    <ProtectedRoute>
+      <ChangePasswordPage />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
       <Toaster />
     </div>
