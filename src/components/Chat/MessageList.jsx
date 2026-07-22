@@ -71,7 +71,7 @@ export default function MessageList() {
   let lastDate = null;
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto space-y-1 px-4 py-3">
+    <div className="flex-1 min-h-0 overflow-y-auto space-y-1 px-4 py-3 bg-white">
       {messages.length === 0 ? (
         <div className="mt-10 text-center text-gray-400">
           No messages yet. Say hi 👋

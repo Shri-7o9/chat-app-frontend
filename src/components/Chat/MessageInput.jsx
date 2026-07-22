@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessage, setReplyingTo } from "../../stores/chatSlice";
 
@@ -7,6 +7,26 @@ export default function MessageInput({ selectedUser }) {
   const { replyingTo } = useSelector((state) => state.chat);
   const { authUser } = useSelector((state) => state.auth);
   const [text, setText] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const textareaRef = useRef(null);
+
+  const handleTextareaChange = (e) => {
+    setText(e.target.value);
+
+    const textarea = textareaRef.current;
+    textarea.style.height = "auto";
+
+    const lineHeight = 24;
+    const maxHeight = 10 * lineHeight;
+    const height = Math.min(textarea.scrollHeight, maxHeight);
+
+    textarea.style.height = `${height}px`;
+    textarea.style.overflowY =
+      textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+
+    // Change to rectangle after 3 lines
+    setIsExpanded(height > lineHeight * 3);
+  };
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -21,6 +41,13 @@ export default function MessageInput({ selectedUser }) {
     );
 
     setText("");
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.overflowY = "hidden";
+    }
+
+    setIsExpanded(false);
     dispatch(setReplyingTo(null));
   };
 
