@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { UserPlus,Search } from "lucide-react";
+import { UserPlus, Search, Inbox } from "lucide-react";
 import { Plus, Trash2 } from "lucide-react"; // Added Trash2 icon for a cleaner UI look
-import { setSelectedUser } from "../../stores/chatSlice.js";
+import { setSelectedUser, getMessageRequests } from "../../stores/chatSlice.js";
 import { axiosInstance } from "../../libs/axios.js";
 import UserListItem from "./UserListItem.jsx";
 import NewChatModal from "./NewChatModel.jsx";
+import MessageRequestsModal from "./MessageRequestsModal.jsx";
 
 export default function Sidebar({ currentUser, selectedUser }) {
   const dispatch = useDispatch();
@@ -106,15 +107,48 @@ export default function Sidebar({ currentUser, selectedUser }) {
             onChange={(e) => setQuery(e.target.value)}
             style={{ flex:1, padding: "8px 15px", background:"transparent", color: "#fff", outline: "none" }}
           />
-  <Search size={18} className="text-gray-500" />
+           <Search size={18} className="text-gray-500" />
 </label>
-      <button
-  onClick={() => setShowNewChatModal(true)}
+           {/* Message Requests button */}
+          <button
+            onClick={() => {
+              dispatch(getMessageRequests());
+              document.getElementById("message_requests_modal").showModal();
+            }}
+            title="Message Requests"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px",
+              borderRadius: "50%",
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
+          >
+            <Inbox size={26} />
+          </button>
+
+          {/* New chat button */}
+          <button
+           onClick={() => setShowNewChatModal(true)}
   title="Add new user"
   className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-110 transition-all duration-300 flex-shrink-0"
->
-  <Plus size={20} />
-</button>
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+              borderRadius: "50%",
+              border: "none",
+              background: "#4f46e5",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            <Plus size={20}  />
+          </button>
         </div>
       </div>
 
@@ -152,42 +186,45 @@ export default function Sidebar({ currentUser, selectedUser }) {
           />
         </div>
 
-        <button
-          onClick={(e) => handleRemoveUser(e, user._id)}
-          title="Remove Chat"
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#ef4444",
-            cursor: "pointer",
-            padding: "8px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "6px",
-            opacity: 0.7,
-            transition: "opacity 0.2s, background 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = "1";
-            e.currentTarget.style.background = "#2d2d2d";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = "0.7";
-            e.currentTarget.style.background = "transparent";
-          }}
-        >
-          <Trash2 size={16} />
-        </button>
+            {/* Red delete disconnect target trigger action option element button */}
+            <button
+              onClick={(e) => handleRemoveUser(e, user._id)}
+              title="Remove Chat"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#ef4444",
+                cursor: "pointer",
+                padding: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "6px",
+                opacity: 0.7,
+                transition: "opacity 0.2s, background 0.2s"
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.opacity = "1"; 
+                e.currentTarget.style.background = "#2d2d2d"; }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.opacity = "0.7"; 
+                e.currentTarget.style.background = "transparent"; }}
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
       </div>
-    ))}
-</div>
 
-{showNewChatModal && (
-  <NewChatModal
-    onClose={handleModalClose}
-    onUserAdded={fetchConnections}
-  />
-)}
-</aside>
-)}
+      {/* Global query popup modal layout visibility toggler */}
+      {showNewChatModal && (
+        <NewChatModal 
+          onClose={handleModalClose} 
+          onUserAdded={fetchConnections}
+        />
+      )}
+        {/* Message Requests Modal */}
+      <MessageRequestsModal />
+    </aside>
+  );
+}
