@@ -49,6 +49,21 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
+// Inside your chatSlice.js
+export const addConnection = createAsyncThunk(
+  "chat/addConnection",
+  async (targetUserId, thunkAPI) => {
+    try {
+      // Sends the target user's ID in the request body
+      const response = await axiosInstance.post("/auth/connect", { targetUserId });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
 const initialState = {
   users: [],
   selectedUser: null,
