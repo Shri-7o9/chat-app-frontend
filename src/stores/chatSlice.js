@@ -240,7 +240,6 @@ const chatSlice = createSlice({
         state.isMessagesLoading = false;
       })
 
-      // KEPT ORIGINAL — pushes to messages array immediately for real time feel
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.messages.push(action.payload);
       })
