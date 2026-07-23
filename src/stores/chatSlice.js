@@ -176,12 +176,14 @@ export const addConnection = createAsyncThunk(
   async (targetUserId, thunkAPI) => {
     try {
       // Sends the target user's ID in the request body
-      const response = await axiosInstance.post("/auth/connect", { targetUserId });
+      const response = await axiosInstance.post("/auth/connect", {
+        targetUserId,
+      });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
-  }
+  },
 );
 
 export const blockMessageRequest = createAsyncThunk(
@@ -199,16 +201,16 @@ export const blockMessageRequest = createAsyncThunk(
 );
 
 const initialState = {
-    users: [],
-    selectedUser: null,
-    messages: [],
-    messageRequests: [],
-    isUsersLoading: false,
-    isMessagesLoading: false,
-    isRequestsLoading: false,
-    isTyping: false,
-    replyingTo: null,
-    forwardingMessage: null,
+  users: [],
+  selectedUser: null,
+  messages: [],
+  messageRequests: [],
+  isUsersLoading: false,
+  isMessagesLoading: false,
+  isRequestsLoading: false,
+  isTyping: false,
+  replyingTo: null,
+  forwardingMessage: null,
 };
 
 const chatSlice = createSlice({
@@ -230,6 +232,10 @@ const chatSlice = createSlice({
     },
     setIsTyping: (state, action) => {
       state.isTyping = action.payload;
+    },
+
+    removeFromSidebar: (state, action) => {
+      state.users = state.users.filter((u) => u._id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -323,6 +329,7 @@ export const {
   setReplyingTo,
   setForwardingMessage,
   setIsTyping,
+  removeFromSidebar,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

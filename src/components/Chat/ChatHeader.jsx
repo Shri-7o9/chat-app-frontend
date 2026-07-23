@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MoreVertical } from "lucide-react";
-import { setSelectedUser } from "../../stores/chatSlice";
+import { setSelectedUser, getUsers } from "../../stores/chatSlice";
+import { axiosInstance } from "../../libs/axios.js";
 
 export default function ChatHeader({ user, isOnline }) {
   const dispatch = useDispatch();
+  const { selectedUser } = useSelector((state) => state.chat);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -23,9 +26,31 @@ export default function ChatHeader({ user, isOnline }) {
     document.getElementById("delete_conversation_modal").showModal();
   };
 
+  const handleConfirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+
+      // use existing disconnect API
+      await axiosInstance.delete("/auth/disconnect", {
+        data: { targetUserId: user._id },
+      });
+
+      // close chat window
+      dispatch(setSelectedUser(null));
+
+      // refresh sidebar to remove user instantly
+      dispatch(getUsers());
+
+      document.getElementById("delete_conversation_modal").close();
+    } catch (error) {
+      console.error("Error removing connection:", error.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (!user) return null;
 
-  // handle both fullName and firstName/lastName
   const displayName =
     user.fullName ||
     `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
@@ -74,21 +99,21 @@ export default function ChatHeader({ user, isOnline }) {
         <div className="modal-box">
           <h3 className="font-bold text-lg">Delete Conversation</h3>
           <p className="py-4 text-gray-500">
-            Are you sure you want to delete this conversation? This will only
-            hide it from your view.
+            Are you sure you want to delete this conversation? This will remove
+            this user from your view.
           </p>
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn">No</button>
+              <button className="btn" disabled={isDeleting}>
+                No
+              </button>
             </form>
             <button
               className="btn btn-error"
-              onClick={() => {
-                dispatch(setSelectedUser(null));
-                document.getElementById("delete_conversation_modal").close();
-              }}
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
             >
-              Yes
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>
