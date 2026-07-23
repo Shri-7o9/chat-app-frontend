@@ -1,212 +1,197 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { UserPlus, Search, Inbox } from "lucide-react";
-import { Plus, Trash2 } from "lucide-react"; // Added Trash2 icon for a cleaner UI look
-import { setSelectedUser, getMessageRequests } from "../../stores/chatSlice.js";
-import { axiosInstance } from "../../libs/axios.js";
+import { UserPlus, Search, Inbox, ArrowLeft } from "lucide-react";
+import {
+  setSelectedUser,
+  getMessageRequests,
+  acceptMessageRequest,
+  blockMessageRequest,
+} from "../../stores/chatSlice.js";
 import UserListItem from "./UserListItem.jsx";
-import NewChatModal from "./NewChatModel.jsx";
-import MessageRequestsModal from "./MessageRequestsModal.jsx";
+import NewChatModel from "./NewChatModel.jsx";
 
-export default function Sidebar({ currentUser, selectedUser }) {
+export default function Sidebar({
+  users,
+  currentUser,
+  selectedUser,
+  isRequestView,
+  onOpenRequests,
+  onCloseRequests,
+}) {
   const dispatch = useDispatch();
   const onlineUsers = useSelector((state) => state.auth.onlineUsers) || [];
-  
-  const [connections, setConnections] = useState([]);
-  const [loading, setLoading] = useState(true); // Initialized to true to avoid immediate cascading trigger inside effect
-  const [showNewChatModal, setShowNewChatModal] = useState(false);
-  const [query, setQuery] = useState("");
-
-  // Reusable callback hook for triggering manual sidebar profile refreshes
-  const fetchConnections = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get("/auth/sidebar");
-      setConnections(res.data);
-    } catch (error) {
-      console.error("Error fetching sidebar connections:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Strict compiler compliant mount lifecycle synchronization setup
-  useEffect(() => {
-    let isMounted = true;
-
-    const initFetch = async () => {
-      try {
-        const res = await axiosInstance.get("/auth/sidebar");
-        if (isMounted) {
-          setConnections(res.data);
-        }
-      } catch (error) {
-        console.error("Error on mount fetch:", error.message);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    initFetch();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Handler for removing a connection from the list
-  const handleRemoveUser = async (e, userId) => {
-    e.stopPropagation(); // CRITICAL: Stops the row wrapper click handler from selecting the conversation tab
-    
-    if (!window.confirm("Are you sure you want to remove this user from your conversations?")) {
-      return;
-    }
-
-    try {
-      // In Axios, DELETE payload arguments must be declared inside a nested 'data' field wrapper
-      await axiosInstance.delete("/auth/disconnect", {
-        data: { targetUserId: userId }
-      });
-      
-      // Instantly synchronize view states by triggering database re-fetch execution chain
-      fetchConnections();
-      
-      // If the removed connection happens to be the active open room frame layout, close it out
-      if (selectedUser?._id === userId) {
-        dispatch(setSelectedUser(null));
-      }
-    } catch (error) {
-      console.error("Error removing connection item:", error.message);
-    }
-  };
-
-  const handleModalClose = () => {
-    setShowNewChatModal(false);
-    fetchConnections(); 
-  };
-
-  const filteredUsers = connections.filter((u) =>
-    `${u.fullName}`.toLowerCase().includes(query.trim().toLowerCase())
+  const { messageRequests, isRequestsLoading } = useSelector(
+    (state) => state.chat,
   );
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+
+  const handleOpenRequests = () => {
+    dispatch(getMessageRequests());
+    onOpenRequests();
+  };
+
+  const handleSelectRequestUser = (user) => {
+    dispatch(setSelectedUser(user));
+  };
 
   return (
-    <aside style={{ display: "flex", flexDirection: "column", height: "100%", background: "#1e1e1e", color: "#fff", padding: "16px" }}>
-      {/* Search Header layout container */}
-      <div style={{ marginBottom: "16px" }}>
-        <h2 style={{ fontSize: "20px", marginBottom: "12px", marginTop: 0 }}>Chats</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input
-            type="text"
-            placeholder="Search active chats..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            style={{ flex: 1, padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", background: "transparent", color: "#fff", outline: "none" }}
-          />
-
-           {/* Message Requests button */}
-          <button
-            onClick={() => {
-              dispatch(getMessageRequests());
-              document.getElementById("message_requests_modal").showModal();
-            }}
-            title="Message Requests"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "6px",
-              borderRadius: "50%",
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            <Inbox size={26} />
-          </button>
-
-          {/* New chat button */}
-          <button
-            onClick={() => setShowNewChatModal(true)}
-            title="Add new user"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px",
-              borderRadius: "50%",
-              border: "none",
-              background: "#4f46e5",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-          >
-            <Plus size={18}  />
-          </button>
-        </div>
-      </div>
-
-      {/* Active Chats scroll section area */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {loading && <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>Loading chats...</p>}
-        
-        {!loading && connections.length === 0 && (
-          <p style={{ padding: "10px", fontSize: "14px", color: "#aaa" }}>
-            No active conversations. Click "+" to add someone!
-          </p>
-        )}
-
-        {!loading && filteredUsers.map((user) => (
-          <div 
-            key={user._id} 
-            className="sidebar-row-item"
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "8px", transition: "background 0.2s" }}
-          >
-            {/* List Row component wrapper trigger selection context */}
-            <div style={{ flex: 1 }}>
-              <UserListItem
-                user={user}
-                isActive={selectedUser?._id === user._id}
-                isOnline={onlineUsers.includes(user._id)}
-                onClick={() => dispatch(setSelectedUser(user))}
-              />
-            </div>
-
-            {/* Red delete disconnect target trigger action option element button */}
+    <aside
+      data-theme="corporate"
+      className="w-72 h-screen bg-base-100 border-r border-base-300 flex flex-col"
+    >
+      <div className="p-4">
+        {/* Header — switches between Chats and Requests */}
+        <div className="flex items-center mb-4">
+          {showRequests && (
             <button
-              onClick={(e) => handleRemoveUser(e, user._id)}
-              title="Remove Chat"
+              onClick={() => {
+                setShowRequests(false);
+                dispatch(setSelectedUser(null));
+              }}
+              className="mr-2 p-1 rounded-full hover:bg-base-200"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          <h2 className="text-3xl font-normal flex-1 text-center">
+            {showRequests ? "Requests" : "Chats"}
+          </h2>
+        </div>
+
+        {/* Search + buttons — only show on Chats view */}
+        {!showRequests && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <label className="flex items-center w-full h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
+              <input
+                type="text"
+                placeholder="Search users..."
+                className="flex-1 bg-transparent outline-none placeholder:text-gray-500"
+              />
+              <Search size={18} className="text-gray-500" />
+            </label>
+
+            {/* Message Requests button */}
+            <button
+              onClick={handleOpenRequests}
+              title="Message Requests"
               style={{
-                background: "transparent",
-                border: "none",
-                color: "#ef4444",
-                cursor: "pointer",
-                padding: "8px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                borderRadius: "6px",
-                opacity: 0.7,
-                transition: "opacity 0.2s, background 0.2s"
+                padding: "6px",
+                borderRadius: "50%",
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.background = "#2d2d2d"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.7"; e.currentTarget.style.background = "transparent"; }}
             >
-              <Trash2 size={16} />
+              <Inbox size={26} />
+            </button>
+
+            {/* New chat button */}
+            <button
+              onClick={() => setShowNewChatModal(true)}
+              title="Start new chat"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "6px",
+                borderRadius: "50%",
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
+              <UserPlus size={30} />
             </button>
           </div>
-        ))}
+        )}
       </div>
 
-      {/* Global query popup modal layout visibility toggler */}
-      {showNewChatModal && (
-        <NewChatModal 
-          onClose={handleModalClose} 
-          onUserAdded={fetchConnections}
-        />
-      )}
+      {/* User list — switches between connections and requests */}
+      <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
+        {showRequests ? (
+          // Message Requests list
+          isRequestsLoading ? (
+            <p className="text-center text-gray-400 mt-4">Loading...</p>
+          ) : messageRequests.length === 0 ? (
+            <p className="text-center text-gray-400 mt-4">
+              No message requests
+            </p>
+          ) : (
+            messageRequests.map((user) => (
+              <button
+                key={user._id}
+                onClick={() => handleSelectRequestUser(user)}
+                className={`group w-full rounded-xl border transition-all duration-200 ${
+                  selectedUser?._id === user._id
+                    ? "bg-gray-500 border-gray-500 hover:!bg-gray-700"
+                    : "bg-base-100 border-base-200 hover:bg-base-300"
+                }`}
+              >
+                <div
+                  className={`p-4 text-left transition-colors duration-200 ${
+                    selectedUser?._id === user._id
+                      ? "text-white group-hover:text-white"
+                      : "text-black"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={user.profilePic || "/avatar-placeholder.png"}
+                      alt={user.fullName}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm truncate">
+                        {user.fullName}
+                      </p>
+                      <p className="text-xs opacity-60 truncate">
+                        {user.lastMessage || "Sent you a message"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))
+          )
+        ) : (
+          // Normal Chats list
+          users.map((user) => (
+            <button
+              key={user._id}
+              onClick={() => dispatch(setSelectedUser(user))}
+              className={`group w-full rounded-xl border transition-all duration-200 ${
+                selectedUser?._id === user._id
+                  ? "bg-gray-500 border-gray-500 hover:!bg-gray-700"
+                  : "bg-base-100 border-base-200 hover:bg-base-300"
+              }`}
+            >
+              <div
+                className={`p-4 text-left transition-colors duration-200 ${
+                  selectedUser?._id === user._id
+                    ? "text-white group-hover:text-white"
+                    : "text-black"
+                }`}
+              >
+                <UserListItem
+                  user={user}
+                  isOnline={onlineUsers.includes(user._id)}
+                />
+              </div>
+            </button>
+          ))
+        )}
+      </div>
 
-      {/* Message Requests Modal */}
-      <MessageRequestsModal />
+      <div className="border-t border-base-300 p-4 text-center font-medium">
+        {currentUser?.firstName} {currentUser?.lastName}
+      </div>
+
+      {showNewChatModal && (
+        <NewChatModel onClose={() => setShowNewChatModal(false)} />
+      )}
     </aside>
   );
 }

@@ -1,76 +1,76 @@
-import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import {
   getMessageRequests,
   acceptMessageRequest,
   blockMessageRequest,
   setSelectedUser,
-} from "../../stores/chatSlice"
+} from "../../stores/chatSlice";
 
 const MessageRequestsModal = () => {
-  const dispatch = useDispatch()
-  const { messageRequests, isRequestsLoading } = useSelector((state) => state.chat)
+  const dispatch = useDispatch();
+  const { messageRequests, isRequestsLoading } = useSelector(
+    (state) => state.chat,
+  );
 
-  useEffect(() => {
-    // only fetch when modal is opened — handled by button click
-  }, [])
-
-  const handleOpen = () => {
-    dispatch(getMessageRequests())
-  }
-
-  const handleAccept = (userId) => {
-    dispatch(acceptMessageRequest(userId))
-  }
+  const handleAccept = async (user) => {
+    await dispatch(acceptMessageRequest(user._id));
+    // open their chat after accepting
+    dispatch(setSelectedUser(user));
+    document.getElementById("message_requests_modal").close();
+  };
 
   const handleBlock = (userId) => {
-    if (window.confirm("Block this user?")) {
-      dispatch(blockMessageRequest(userId))
-    }
-  }
-
-  const handleSelectUser = (user) => {
-    dispatch(setSelectedUser(user))
-    document.getElementById("message_requests_modal").close()
-  }
+    dispatch(blockMessageRequest(userId));
+  };
 
   return (
-    <dialog id="message_requests_modal" className="modal" onToggle={handleOpen}>
-      <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">Message Requests</h3>
+    <dialog id="message_requests_modal" className="modal">
+      <div className="modal-box max-w-md">
+        <h3 className="font-bold text-lg mb-1">Message Requests</h3>
+        <p className="text-sm text-gray-400 mb-4">
+          You can accept or block these messages
+        </p>
 
         {isRequestsLoading ? (
-          <p className="text-center text-gray-400">Loading...</p>
+          <p className="text-center text-gray-400 py-4">Loading...</p>
         ) : messageRequests.length === 0 ? (
-          <p className="text-center text-gray-400">No message requests</p>
+          <p className="text-center text-gray-400 py-4">No message requests</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1">
             {messageRequests.map((user) => (
               <div
                 key={user._id}
-                className="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-gray-100"
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-colors"
               >
-                <div
-                  className="flex items-center gap-3 cursor-pointer"
-                  onClick={() => handleSelectUser(user)}
-                >
+                {/* Avatar */}
+                <div className="relative flex-shrink-0">
                   <img
                     src={user.profilePic || "/avatar-placeholder.png"}
                     alt={user.fullName}
-                    className="w-10 h-10 rounded-full"
+                    className="w-12 h-12 rounded-full object-cover"
                   />
-                  <span className="font-medium">{user.fullName}</span>
                 </div>
 
-                <div className="flex gap-2">
+                {/* Name + message preview */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm truncate">
+                    {user.fullName}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {user.lastMessage || "Sent you a message"}
+                  </p>
+                </div>
+
+                {/* Accept / Block buttons */}
+                <div className="flex gap-2 flex-shrink-0">
                   <button
-                    className="btn btn-sm btn-success"
-                    onClick={() => handleAccept(user._id)}
+                    className="btn btn-sm btn-primary rounded-full px-4"
+                    onClick={() => handleAccept(user)}
                   >
                     Accept
                   </button>
                   <button
-                    className="btn btn-sm btn-error"
+                    className="btn btn-sm btn-ghost rounded-full px-4 text-error"
                     onClick={() => handleBlock(user._id)}
                   >
                     Block
@@ -81,19 +81,18 @@ const MessageRequestsModal = () => {
           </div>
         )}
 
-        <div className="modal-action">
+        <div className="modal-action mt-4">
           <form method="dialog">
-            <button className="btn">Close</button>
+            <button className="btn btn-ghost btn-sm">Close</button>
           </form>
         </div>
       </div>
 
-      {/* outside click closes modal */}
       <form method="dialog" className="modal-backdrop">
         <button>close</button>
       </form>
     </dialog>
-  )
-}
+  );
+};
 
-export default MessageRequestsModal
+export default MessageRequestsModal;

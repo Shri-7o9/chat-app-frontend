@@ -5,12 +5,21 @@ import { getMessages, markMessagesAsRead } from "../../stores/chatSlice.js";
 import ChatHeader from "./ChatHeader.jsx";
 import MessageList from "./MessageList.jsx";
 import MessageInput from "./MessageInput.jsx";
+import MessageRequestActions from "./MessageRequestActions.jsx";
 import ForwardModal from "../ForwardModal.jsx";
 
-export default function ChatWindow() {
+export default function ChatWindow({
+  isRequestView,
+  onRequestAccept,
+  onRequestBlock,
+}) {
   const dispatch = useDispatch();
-  const { selectedUser } = useSelector((state) => state.chat);
+  const { selectedUser, users } = useSelector((state) => state.chat);
   const { onlineUsers } = useSelector((state) => state.auth);
+
+  // check if selected user is in connections or is a request
+  const isRequestUser =
+    selectedUser && !users.some((u) => u._id === selectedUser._id);
 
   useEffect(() => {
     if (selectedUser?._id) {
@@ -35,7 +44,18 @@ export default function ChatWindow() {
         isOnline={onlineUsers.includes(selectedUser._id)}
       />
       <MessageList />
-      <MessageInput selectedUser={selectedUser} />
+
+      {/* show Accept/Block if request user, otherwise show normal input */}
+      {isRequestView && isRequestUser ? (
+        <MessageRequestActions
+          selectedUser={selectedUser}
+          onAccept={onRequestAccept}
+          onBlock={onRequestBlock}
+        />
+      ) : (
+        <MessageInput selectedUser={selectedUser} />
+      )}
+
       <ForwardModal />
     </div>
   );
