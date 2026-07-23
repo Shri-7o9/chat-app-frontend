@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Search, X, UserPlus, Check } from "lucide-react";
 import { addConnection } from "../../stores/chatSlice.js";
+import axios from "axios";
 import { axiosInstance } from "../../libs/axios.js";
 
 // FIX: Added 'onUserAdded' to the props destructured here
@@ -42,7 +43,7 @@ export default function NewChatModal({ onClose, onUserAdded }) {
         
       } catch (error) {
         // Prevent clearing state if the user simply typed another character
-        if (error.name !== "CanceledError" && !axiosInstance.isCancel(error)) {
+        if (error.name !== "CanceledError" && !axios.isCancel(error)) {
           console.error("Error searching users:", error.message);
           setResults([]);
         }
