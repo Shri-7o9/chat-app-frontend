@@ -59,7 +59,7 @@ export default function MessageInput({ selectedUser }) {
   };
 
   return (
-    <div className="bg-base-100" data-theme="corporate">
+    <div className="bg-gray-100" data-theme="corporate">
       {replyingTo && (
         <div className="flex items-center justify-between px-4 py-2 bg-gray-100 border-t text-sm">
           <div>
@@ -81,7 +81,7 @@ export default function MessageInput({ selectedUser }) {
         </div>
       )}
 
-      <div className="border-t bg-base-100 p-4">
+      <div className="border-t bg-gray-100 p-4">
         <div className="flex items-center gap-3">
           <textarea
             placeholder="Type a message..."
@@ -89,11 +89,11 @@ export default function MessageInput({ selectedUser }) {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            className="flex-1 resize-none rounded-full border border-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 resize-none bg-white rounded-full border border-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
             onClick={handleSend}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 hover:scale-115 transition-all duration-200"
+            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium border border-gray-500 text-white hover: hover:scale-115 transition-all duration-200"
           >
             Send
           </button>

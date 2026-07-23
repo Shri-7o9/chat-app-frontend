@@ -59,16 +59,12 @@ export default function ChatHeader({ user, isOnline }) {
   return (
     <>
       <div
-        className="border-b bg-base-100 px-6 py-4 flex items-center justify-between"
+        className="border-b bg-gray-100 px-6 py-4 flex items-center justify-between"
         data-theme="corporate"
       >
-        <div>
+       <div>
           <p className="text-3xl font-semibold">{displayName}</p>
-          <p
-            className={`text-sm ${isOnline ? "text-green-500" : "text-red-500"}`}
-          >
-            {isOnline ? "Online" : "Offline"}
-          </p>
+
         </div>
 
         {/* Three dots button */}
