@@ -41,7 +41,7 @@ export default function MessageBubble({
             <span className="text-xs opacity-70 block mb-1">Forwarded</span>
           )}
 
-          {message.replyTo && (
+          {!message.unsent && message.replyTo && (
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -70,9 +70,17 @@ export default function MessageBubble({
           )}
 
           {message.unsent ? (
-            <p>
-              <em>This message was deleted</em>
-            </p>
+            <div>
+              <p className="flex items-center gap-1 text-sm italic opacity-70">
+                🚫 This message was unsent
+              </p>
+              <span className="text-xs opacity-75 block text-right mt-1">
+                {new Date(message.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
           ) : (
             <>
               {message.image && (
@@ -102,10 +110,10 @@ export default function MessageBubble({
             </>
           )}
 
-          {message.reactions?.length > 0 && (
+          {!message.unsent && message.reactions?.length > 0 && (
             <div className="flex gap-1 mt-1 flex-wrap">
               {message.reactions.map((r) => (
-                <span key={r.userId + r.emoji} className="text-sm">
+                <span key={r.user + r.emoji} className="text-sm">
                   {r.emoji}
                 </span>
               ))}
