@@ -113,7 +113,7 @@ export default function MessageBubble({
           {!message.unsent && message.reactions?.length > 0 && (
             <div className="flex gap-1 mt-1 flex-wrap">
               {message.reactions.map((r) => (
-                <span key={r.user + r.emoji} className="text-sm">
+                <span key={r.userId + r.emoji} className="text-sm">
                   {r.emoji}
                 </span>
               ))}
