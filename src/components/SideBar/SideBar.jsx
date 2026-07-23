@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UserPlus, Search, Inbox, ArrowLeft } from "lucide-react";
-import {
-  setSelectedUser,
-  getMessageRequests,
-  acceptMessageRequest,
-  blockMessageRequest,
-} from "../../stores/chatSlice.js";
+import { setSelectedUser, getMessageRequests } from "../../stores/chatSlice.js";
 import UserListItem from "./UserListItem.jsx";
 import NewChatModel from "./NewChatModel.jsx";
 
@@ -42,24 +37,21 @@ export default function Sidebar({
       <div className="p-4">
         {/* Header — switches between Chats and Requests */}
         <div className="flex items-center mb-4">
-          {showRequests && (
+          {isRequestView && (
             <button
-              onClick={() => {
-                setShowRequests(false);
-                dispatch(setSelectedUser(null));
-              }}
+              onClick={onCloseRequests}
               className="mr-2 p-1 rounded-full hover:bg-base-200"
             >
               <ArrowLeft size={20} />
             </button>
           )}
           <h2 className="text-3xl font-normal flex-1 text-center">
-            {showRequests ? "Requests" : "Chats"}
+            {isRequestView ? "Requests" : "Chats"}
           </h2>
         </div>
 
         {/* Search + buttons — only show on Chats view */}
-        {!showRequests && (
+        {!isRequestView && (
           <div style={{ display: "flex", alignItems: "center" }}>
             <label className="flex items-center w-full h-10 px-2 bg-white border-2 border-gray-400 rounded-full shadow-sm">
               <input
@@ -111,8 +103,7 @@ export default function Sidebar({
 
       {/* User list — switches between connections and requests */}
       <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
-        {showRequests ? (
-          // Message Requests list
+        {isRequestView ? (
           isRequestsLoading ? (
             <p className="text-center text-gray-400 mt-4">Loading...</p>
           ) : messageRequests.length === 0 ? (
@@ -157,7 +148,6 @@ export default function Sidebar({
             ))
           )
         ) : (
-          // Normal Chats list
           users.map((user) => (
             <button
               key={user._id}

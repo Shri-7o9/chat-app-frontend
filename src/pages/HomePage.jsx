@@ -15,10 +15,9 @@ const HomePage = () => {
   }, [dispatch]);
 
   const handleRequestAccept = () => {
-    // switch back to chats view after accepting
     setIsRequestView(false);
     dispatch(setSelectedUser(null));
-    dispatch(getUsers()); // refresh sidebar instantly
+    dispatch(getUsers());
   };
 
   const handleRequestBlock = () => {
@@ -29,8 +28,7 @@ const HomePage = () => {
   return (
     <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
       {/* Left side — Sidebar fixed width */}
-      <div style={{ width: "600px", flexShrink: 0 }}>
-        <MessageRequests />
+      <div style={{ width: "300px", flexShrink: 0 }}>
         <Sidebar
           users={users}
           currentUser={currentUser}
@@ -43,6 +41,8 @@ const HomePage = () => {
           }}
         />
       </div>
+
+      {/* Right side — Chat area */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <ChatWindow
           isRequestView={isRequestView}
