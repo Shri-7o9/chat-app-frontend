@@ -1,46 +1,49 @@
 import { useState } from "react";
-import { axiosInstance } from "../libs/axios.js";
+import { useDispatch, useSelector } from "react-redux";
+import { changePassword, resetPasswordState } from "../stores/authSlice";
 
 export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  const dispatch = useDispatch();
+  const { isLoading, isError, isSuccess, errorMessage } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setLocalError("");
+    dispatch(resetPasswordState()); 
 
+    // Client-side validations
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      setLocalError("New passwords do not match");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("New password must be at least 6 characters");
+      setLocalError("New password must be at least 6 characters");
       return;
     }
 
-    setLoading(true);
-    try {
-      const res = await axiosInstance.put("/auth/change-password", {
-        currentPassword,
-        newPassword,
-      });
-
-      setSuccess(res.data.message || "Password changed successfully");
+    // 1. Dispatch the action and unwrap the promise result
+    const resultAction = await dispatch(changePassword({ currentPassword, newPassword }));
+    
+    // 2. Clear inputs directly inside the event handler if successful
+    if (changePassword.fulfilled.match(resultAction)) {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+
+      // Optional: Auto-clear backend success banner after 4 seconds
+      setTimeout(() => {
+        dispatch(resetPasswordState());
+      }, 4000);
     }
   };
+
+  const activeError = localError || (isError ? errorMessage : "");
 
   return (
     <div className="flex justify-center items-center min-h-[80vh] px-4">
@@ -88,11 +91,11 @@ export default function ChangePassword() {
               />
             </div>
 
-            {error && <p className="text-error text-sm">{error}</p>}
-            {success && <p className="text-success text-sm">{success}</p>}
+            {activeError && <p className="text-error text-sm">{activeError}</p>}
+            {isSuccess && <p className="text-success text-sm">Password changed successfully</p>}
 
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? "Updating..." : "Update Password"}
+            <button type="submit" className="btn btn-primary" disabled={isLoading}>
+              {isLoading ? "Updating..." : "Update Password"}
             </button>
           </form>
         </div>
