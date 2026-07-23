@@ -17,7 +17,7 @@ export default function MessageInput({ selectedUser }) {
     textarea.style.height = "auto";
 
     const lineHeight = 24;
-    const maxHeight = 10 * lineHeight;
+    const maxHeight = 4 * lineHeight;
     const height = Math.min(textarea.scrollHeight, maxHeight);
 
     textarea.style.height = `${height}px`;
@@ -31,7 +31,6 @@ export default function MessageInput({ selectedUser }) {
   const handleSend = () => {
     if (!text.trim()) return;
 
-    // BACK TO ORIGINAL SIGNATURE
     dispatch(
       sendMessage({
         userId: selectedUser._id,
@@ -84,12 +83,15 @@ export default function MessageInput({ selectedUser }) {
       <div className="border-t bg-gray-100 p-4">
         <div className="flex items-center gap-3">
           <textarea
+            ref={textareaRef}
             placeholder="Type a message..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             rows={1}
-            className="flex-1 resize-none bg-white rounded-full border border-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={`flex-1 resize-none bg-white border border-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              isExpanded ? "rounded-2xl" : "rounded-full"
+            }`}
           />
           <button
             onClick={handleSend}
