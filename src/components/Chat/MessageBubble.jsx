@@ -12,10 +12,12 @@ export default function MessageBubble({
   onUnsend,
   onReact,
   onReply,
+  onJumpToMessage,
 }) {
   return (
     <div
-      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 group`}
+    id={`msg-${message._id}`}  
+    className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 group`}
       onDoubleClick={() => onReply(message)}
     >
       {!isOwn && selectedUser && (
@@ -51,10 +53,46 @@ export default function MessageBubble({
                 </span>
               )}
 
-              {message.unsent ? (
-                <p>
-                  <em>This message was deleted</em>
+                        {!message.unsent && message.replyTo && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onJumpToMessage?.(message.replyTo._id);
+              }}
+              className={`mb-1.5 cursor-pointer rounded-lg border-l-4 px-2.5 py-1.5
+                ${
+                  isOwn
+                    ? "border-white/70 bg-white/15 hover:bg-white/20"
+                    : "border-white/40 bg-black/20 hover:bg-black/30"
+                }`}
+            >
+              <p className="text-xs font-semibold opacity-90">
+                {message.replyTo.senderId !== selectedUser?._id
+                  ? "You"
+                  : selectedUser?.firstName}
+              </p>
+              {message.replyTo.text ? (
+                <p className="text-xs opacity-70 truncate">
+                  {message.replyTo.text}
                 </p>
+              ) : (
+                <p className="text-xs italic opacity-70">📷 Photo</p>
+              )}
+            </div>
+          )}
+
+              {message.unsent ? (
+                   <div>
+              <p className="flex items-center gap-1 text-sm italic opacity-70">
+                🚫 This message was unsent
+              </p>
+              <span className="text-xs opacity-75 block text-right mt-1">
+                {new Date(message.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
               ) : (
                 <>
                   {message.image && (
@@ -85,6 +123,7 @@ export default function MessageBubble({
                         </span>
 
                       </div>
+
                     </div>
                   )}
                 </>
@@ -92,7 +131,7 @@ export default function MessageBubble({
             </div>
 
             {/* Floating reaction */}
-            {message.reactions?.length > 0 && (
+            {!message.unsent && message.reactions?.length > 0 && (
               <div
                 className={`absolute -bottom-2 ${
                   isOwn ? "-right-2" : "-left-2"

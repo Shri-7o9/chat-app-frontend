@@ -66,6 +66,14 @@ export default function MessageList() {
     dispatch(setReplyingTo(message));
   };
 
+  const handleJumpToMessage = (messageId) => {
+    const el = document.getElementById(`msg-${messageId}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("bg-yellow-200/30");
+    setTimeout(() => el.classList.remove("bg-yellow-200/30"), 1200);
+  };
+
   if (!selectedUser) return null;
 
   let lastDate = null;
@@ -131,6 +139,7 @@ export default function MessageList() {
                   onUnsend={handleUnsend}
                   onReact={handleReact}
                   onReply={handleReply}
+                  onJumpToMessage={handleJumpToMessage}
                 />
               )}
             </div>

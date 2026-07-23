@@ -97,6 +97,36 @@ export const updateProfile = createAsyncThunk(
   },
 );
 
+//change password
+
+export const changePassword = createAsyncThunk(
+  "auth/changePassword",
+  async ({ currentPassword, newPassword }, thunkAPI) => {
+    try {
+
+      const token = localStorage.getItem("token"); 
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+
+      const response = await axiosInstance.put(
+        "/auth/change-password",
+        { currentPassword, newPassword },
+        config
+      );
+
+      return response.data; // Usually a success message like { message: "Password updated" }
+    } catch (error) {
+      // Extract custom error message from backend or use generic one
+      const message = error.response?.data?.message || error.message || "Failed to change password";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
@@ -121,6 +151,10 @@ export const authSlice = createSlice({
     onlineUsers: [],
     socket: null,
     isSendingResetLink: false,
+    isLoading: false,
+    isError: false,
+    isSuccess: false,
+    errorMessage: "",
   },
 
   reducers: {
@@ -135,6 +169,14 @@ export const authSlice = createSlice({
 
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
+    },
+
+     // Reducer to reset temporary messaging/status states in components
+    resetPasswordState: (state) => {
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = false;
+      state.errorMessage = "";
     },
     
     logout: (state) => {
@@ -209,6 +251,25 @@ export const authSlice = createSlice({
         state.isUpdatingProfile = false;
       })
 
+      // Change password
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+        state.errorMessage = "";
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.isError = false;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.isError = true;
+        state.errorMessage = action.payload; // Contains the error message from rejectWithValue
+      })
+
        // logout
       .addCase(logoutUser.pending, (state) => {
         state.isLoggingIn = true;
@@ -226,7 +287,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setSocket, setOnlineUsers, logout, clearAuthError } =
+export const { setSocket, setOnlineUsers, logout, clearAuthError, resetPasswordState } =
   authSlice.actions;
 
 export default authSlice.reducer;
