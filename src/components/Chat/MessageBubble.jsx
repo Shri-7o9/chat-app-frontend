@@ -12,10 +12,12 @@ export default function MessageBubble({
   onUnsend,
   onReact,
   onReply,
+  onJumpToMessage,
 }) {
   return (
     <div
-      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4`}
+      id={`msg-${message._id}`}
+      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 transition-colors duration-500 rounded-2xl`}
       onDoubleClick={() => onReply(message)}
     >
       {!isOwn && selectedUser && (
@@ -37,6 +39,34 @@ export default function MessageBubble({
         >
           {message.forwarded && (
             <span className="text-xs opacity-70 block mb-1">Forwarded</span>
+          )}
+
+          {message.replyTo && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onJumpToMessage?.(message.replyTo._id);
+              }}
+              className={`mb-1.5 cursor-pointer rounded-lg border-l-4 px-2.5 py-1.5
+                ${
+                  isOwn
+                    ? "border-white/70 bg-white/15 hover:bg-white/20"
+                    : "border-white/40 bg-black/20 hover:bg-black/30"
+                }`}
+            >
+              <p className="text-xs font-semibold opacity-90">
+                {message.replyTo.senderId !== selectedUser?._id
+                  ? "You"
+                  : selectedUser?.firstName}
+              </p>
+              {message.replyTo.text ? (
+                <p className="text-xs opacity-70 truncate">
+                  {message.replyTo.text}
+                </p>
+              ) : (
+                <p className="text-xs italic opacity-70">📷 Photo</p>
+              )}
+            </div>
           )}
 
           {message.unsent ? (
