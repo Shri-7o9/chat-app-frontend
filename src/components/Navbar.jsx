@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
-import { Settings, User, LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import LogoutModal from "./LogoutModal";
 import { useState, useRef, useEffect } from "react";
 
@@ -67,7 +67,11 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               {/* Username */}
               <div className="flex items-center gap-2">
-                <User size={18} />
+                <img
+                  src={authUser.profilePic || "/avatar-placeholder.png"}
+                  alt={authUser.fullName}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
                 <span>{authUser.fullName}</span>
               </div>
 
@@ -81,39 +85,38 @@ const Navbar = () => {
                   <Settings className="w-6 h-6" />
                 </div>
 
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow border border-gray-300 space-y-1"
-          >
-            <li>
-              <Link
-                to="/profile"
-                className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
-              >
-                Update Profile
-              </Link>
-            </li>
-              <li>  
-                 <Link
-                to="/change-password"
-                className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
+                <ul
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow border border-gray-300 space-y-1"
                 >
-                Change Password
-              </Link>
-
-              </li>
-            <li>
-              <button
-                className="flex items-center gap-2 text-error bg-gray-300 hover:text-white hover:bg-red-300 transition-all duration-200 hover:scale-105 font-semibold"
-                onClick={() =>
-                  document.getElementById("logout_modal").showModal()
-                }
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </li>
-          </ul>
+                  <li>
+                    <Link
+                      to="/profile"
+                      className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
+                    >
+                      Update Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/change-password"
+                      className="bg-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-200 hover:scale-105"
+                    >
+                      Change Password
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      className="flex items-center gap-2 text-error bg-gray-300 hover:text-white hover:bg-red-300 transition-all duration-200 hover:scale-105 font-semibold"
+                      onClick={() =>
+                        document.getElementById("logout_modal").showModal()
+                      }
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
           )}
