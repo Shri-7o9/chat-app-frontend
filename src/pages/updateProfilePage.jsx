@@ -15,6 +15,33 @@ const UpdateProfilePage = () => {
     userName: authUser?.userName || "",
   }));
 
+  // Holds the new picture as a base64 data URL, ready to send to the backend.
+  // Falls back to the user's existing picture (or the placeholder) for preview.
+  const [selectedImg, setSelectedImg] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      return toast.error("Please select an image file");
+    }
+
+    // Keep uploads reasonable; Cloudinary's free tier and our request body
+    // limit (10mb) both cap out well below this, so fail fast with a clear
+    // message instead of a confusing server error.
+    const MAX_SIZE_MB = 5;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      return toast.error(`Image must be smaller than ${MAX_SIZE_MB}MB`);
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setSelectedImg(reader.result);
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,7 +53,14 @@ const UpdateProfilePage = () => {
     }
 
     try {
-      await dispatch(updateProfile({ fullName: trimmedFullName, userName: trimmedUsername })).unwrap();
+      await dispatch(
+        updateProfile({
+          fullName: trimmedFullName,
+          userName: trimmedUsername,
+          // Only send profilePic if the user actually picked a new one
+          ...(selectedImg && { profilePic: selectedImg }),
+        }),
+      ).unwrap();
       navigate("/");
     } catch (error) {
       console.log("Update failed", error);
@@ -41,6 +75,38 @@ const UpdateProfilePage = () => {
         <div className="card h-200 w-600 max-w-lg bg-base-100 border-base-300 border-rounded shadow-md ">
   <div className="card-body px-8 py-45">
       <h1 className="text-4xl text-center text-primary">Update Profile </h1>
+
+      <div className="flex flex-col items-center mt-4">
+        <div className="relative">
+          <img
+            src={selectedImg || authUser?.profilePic || "/avatar-placeholder.png"}
+            alt="Profile"
+            className="size-32 rounded-full object-cover border-4 border-base-300"
+          />
+          <label
+            htmlFor="avatar-upload"
+            className={`absolute bottom-0 right-0 bg-primary hover:scale-105 p-2 rounded-full cursor-pointer transition-all duration-200 ${
+              isUpdatingProfile ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5 text-primary-content">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.174C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.174 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+            </svg>
+            <input
+              type="file"
+              id="avatar-upload"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={isUpdatingProfile}
+            />
+          </label>
+        </div>
+        <p className="text-sm text-base-content/60 mt-2">
+          {isUpdatingProfile ? "Uploading..." : "Click the icon to change your photo"}
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="w-full mt-6 space-y-4">
         <div className="form-control">
