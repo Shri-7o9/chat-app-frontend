@@ -9,7 +9,11 @@ export const checkAuth = createAsyncThunk(
       const res = await axiosInstance.get("/auth/check");
       return res.data;
     } catch (error) {
-      console.log("Error in checkAuth:", error);
+      // A 401 here just means "not logged in yet" - completely expected on
+      // first page load, so it shouldn't be logged as an error.
+      if (error.response?.status !== 401) {
+        console.log("Error in checkAuth:", error);
+      }
       return rejectWithValue(error.response?.data?.message || "Something went wrong");
     }
   },
@@ -87,6 +91,7 @@ export const updateProfile = createAsyncThunk(
       const res = await axiosInstance.put("/auth/update-profile", {
         fullName: data.fullName,
         userName: data.userName,
+        ...(data.profilePic && { profilePic: data.profilePic }),
       });
       toast.success("Profile updated successfully");
       return res.data;
