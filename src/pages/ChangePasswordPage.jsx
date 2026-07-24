@@ -27,16 +27,16 @@ export default function ChangePassword() {
       return;
     }
 
-    // 1. Dispatch the action and unwrap the promise result
+
     const resultAction = await dispatch(changePassword({ currentPassword, newPassword }));
     
-    // 2. Clear inputs directly inside the event handler if successful
+  
     if (changePassword.fulfilled.match(resultAction)) {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
 
-      // Optional: Auto-clear backend success banner after 4 seconds
+  
       setTimeout(() => {
         dispatch(resetPasswordState());
       }, 4000);

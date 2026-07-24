@@ -9,14 +9,11 @@ const UpdateProfilePage = () => {
   const navigate = useNavigate();
   const { isUpdatingProfile, authUser } = useSelector((state) => state.auth);
 
-  // Initialize state directly from authUser to prevent render loops
   const [formData, setFormData] = useState(() => ({
     fullName: authUser?.fullName || "",
     userName: authUser?.userName || "",
   }));
 
-  // Holds the new picture as a base64 data URL, ready to send to the backend.
-  // Falls back to the user's existing picture (or the placeholder) for preview.
   const [selectedImg, setSelectedImg] = useState(null);
 
   const handleImageChange = (e) => {
@@ -27,9 +24,6 @@ const UpdateProfilePage = () => {
       return toast.error("Please select an image file");
     }
 
-    // Keep uploads reasonable; Cloudinary's free tier and our request body
-    // limit (10mb) both cap out well below this, so fail fast with a clear
-    // message instead of a confusing server error.
     const MAX_SIZE_MB = 5;
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       return toast.error(`Image must be smaller than ${MAX_SIZE_MB}MB`);

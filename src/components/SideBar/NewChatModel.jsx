@@ -5,14 +5,12 @@ import { addConnection } from "../../stores/chatSlice.js";
 import axios from "axios";
 import { axiosInstance } from "../../libs/axios.js";
 
-// FIX: Added 'onUserAdded' to the props destructured here
 export default function NewChatModal({ onClose, onUserAdded }) {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Handle user typing and instantly reset UI if empty
   const handleInputChange = (e) => {
     const value = e.target.value;
     setQuery(value);
@@ -24,7 +22,7 @@ export default function NewChatModal({ onClose, onUserAdded }) {
   };
 
   useEffect(() => {
-    // 2. Terminate effect immediately if there is no text
+   
     if (!query.trim()) return;
 
     const controller = new AbortController();
@@ -37,12 +35,10 @@ export default function NewChatModal({ onClose, onUserAdded }) {
           { signal: controller.signal }
         );
         
-        // FIX: Extract the 'users' array from your backend object wrapper
-        // Fallback to an empty array [] if for some reason it's missing
         setResults(res.data.users || []);
         
       } catch (error) {
-        // Prevent clearing state if the user simply typed another character
+
         if (error.name !== "CanceledError" && !axios.isCancel(error)) {
           console.error("Error searching users:", error.message);
           setResults([]);
@@ -54,12 +50,10 @@ export default function NewChatModal({ onClose, onUserAdded }) {
       }
     };
 
-    // 3. Debounce: waits 350ms for user to stop typing before calling API
     const timeout = setTimeout(() => {
       searchUsers();
     }, 350); 
 
-    // 4. Cleanup: kills timer and drops late network responses
     return () => {
       clearTimeout(timeout);
       controller.abort();
@@ -70,12 +64,10 @@ export default function NewChatModal({ onClose, onUserAdded }) {
     try {
       await dispatch(addConnection(user._id)).unwrap();
       
-      // Update local modal state to show "Added" checkmark
       setResults((prev) =>
         prev.map((u) => (u._id === user._id ? { ...u, alreadyAdded: true } : u))
       );
 
-      // FIX: Trigger the sidebar to instantly re-fetch its list from the server
       if (onUserAdded) {
         onUserAdded();
       }

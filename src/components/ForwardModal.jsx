@@ -15,7 +15,6 @@ const ForwardModal = () => {
     document.getElementById("forward_modal").close();
   };
 
-  // open modal when forwardingMessage is set
   if (forwardingMessage) {
     setTimeout(() => {
       document.getElementById("forward_modal")?.showModal();
