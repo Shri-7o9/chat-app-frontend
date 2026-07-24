@@ -62,9 +62,13 @@ export default function ChatHeader({ user, isOnline }) {
         className="border-b bg-gray-100 px-6 py-4 flex items-center justify-between"
         data-theme="corporate"
       >
-       <div>
+        <div className="flex items-center gap-3">
+          <img
+            src={user.profilePic || "/avatar-placeholder.png"}
+            alt={displayName}
+            className="w-11 h-11 rounded-full object-cover"
+          />
           <p className="text-3xl font-semibold">{displayName}</p>
-
         </div>
 
         {/* Three dots button */}
