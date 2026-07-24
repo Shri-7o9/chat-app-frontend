@@ -60,20 +60,31 @@ export default function MessageInput({ selectedUser }) {
   return (
     <div className="bg-gray-100" data-theme="corporate">
       {replyingTo && (
-        <div className="flex items-center justify-between px-4 py-2 bg-gray-100 border-t text-sm">
-          <div>
-            <span className="font-semibold text-blue-600">
+        <div className="flex items-start justify-between w-full overflow-hidden border-t bg-gray-100 px-4 py-2 text-sm">
+          <div className="flex-1 min-w-0">
+            <span className="block font-semibold text-blue-600">
               Replying to{" "}
               {replyingTo.senderId !== selectedUser?._id
                 ? "Yourself"
                 : selectedUser?.firstName}
             </span>
-            <p className="truncate text-gray-500">{replyingTo.text}</p>
+
+            <p
+              className="mt-0.5 max-w-full overflow-hidden break-all whitespace-pre-wrap text-gray-500"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {replyingTo.text}
+            </p>
           </div>
+
           <button
             type="button"
             onClick={() => dispatch(setReplyingTo(null))}
-            className="text-gray-400 hover:text-gray-600 ml-2"
+            className="ml-3 flex-shrink-0 text-gray-400 hover:text-gray-600"
           >
             ✕
           </button>

@@ -16,9 +16,8 @@ export default function MessageBubble({
 }) {
   return (
     <div
-    id={`msg-${message._id}`}  
-    className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 group`}
-      onDoubleClick={() => onReply(message)}
+      id={`msg-${message._id}`}
+      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 group`}
     >
       {!isOwn && selectedUser && (
         <img
@@ -33,14 +32,18 @@ export default function MessageBubble({
           isOwn ? "flex-row-reverse" : "flex-row"
         }`}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <div
-            className={`relative inline-block ${
-              isOwn ? "max-w-fit ml-auto" : "max-w-fit"
+            className={`relative w-full ${
+              isOwn ? "ml-auto" : ""
             }`}
           >
             <div
-              className={`inline-block px-4 py-3 rounded-2xl break-words shadow-sm max-w-full
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onReply(message);
+              }}
+              className={`block w-fit max-w-full px-4 py-3 rounded-2xl break-words overflow-hidden shadow-sm cursor-pointer
                 ${
                   isOwn
                     ? "bg-gray-100 text-black rounded-br-none"
@@ -53,46 +56,48 @@ export default function MessageBubble({
                 </span>
               )}
 
-                        {!message.unsent && message.replyTo && (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                onJumpToMessage?.(message.replyTo._id);
-              }}
-              className={`mb-1.5 cursor-pointer rounded-lg border-l-4 px-2.5 py-1.5
-                ${
-                  isOwn
-                    ? "border-white/70 bg-white/15 hover:bg-white/20"
-                    : "border-white/40 bg-black/20 hover:bg-black/30"
-                }`}
-            >
-              <p className="text-xs font-semibold opacity-90">
-                {message.replyTo.senderId !== selectedUser?._id
-                  ? "You"
-                  : selectedUser?.firstName}
-              </p>
-              {message.replyTo.text ? (
-                <p className="text-xs opacity-70 truncate">
-                  {message.replyTo.text}
-                </p>
-              ) : (
-                <p className="text-xs italic opacity-70">📷 Photo</p>
+              {!message.unsent && message.replyTo && (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onJumpToMessage?.(message.replyTo._id);
+                  }}
+                  className={`mb-1.5 w-full max-w-full overflow-hidden cursor-pointer rounded-lg border-l-4 px-2.5 py-1.5
+                    ${
+                      isOwn
+                        ? "border-white/70 bg-white/15 hover:bg-white/20"
+                        : "border-white/40 bg-black/20 hover:bg-black/30"
+                    }`}
+                >
+                  <p className="text-xs font-semibold opacity-90">
+                    {message.replyTo.senderId !== selectedUser?._id
+                      ? "You"
+                      : selectedUser?.firstName}
+                  </p>
+
+                  {message.replyTo.text ? (
+                    <p className="text-xs opacity-70 whitespace-pre-wrap break-all overflow-hidden max-w-full">
+                      {message.replyTo.text}
+                    </p>
+                  ) : (
+                    <p className="text-xs italic opacity-70">📷 Photo</p>
+                  )}
+                </div>
               )}
-            </div>
-          )}
 
               {message.unsent ? (
-                   <div>
-              <p className="flex items-center gap-1 text-sm italic opacity-70">
-                🚫 This message was unsent
-              </p>
-              <span className="text-xs opacity-75 block text-right mt-1">
-                {new Date(message.createdAt).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </div>
+                <div>
+                  <p className="flex items-center gap-1 text-sm italic opacity-70">
+                    🚫 This message was unsent
+                  </p>
+
+                  <span className="text-xs opacity-75 block text-right mt-1">
+                    {new Date(message.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
               ) : (
                 <>
                   {message.image && (
@@ -104,8 +109,8 @@ export default function MessageBubble({
                   )}
 
                   {message.text && (
-                    <div className="relative">
-                      <p className="text-[15px] leading-5 whitespace-pre-wrap break-words pr-14 inline">
+                    <div className="relative w-full">
+                      <p className="block w-full text-[15px] leading-5 whitespace-pre-wrap break-words break-all overflow-hidden pr-14">
                         {message.text}
                         {message.edited && (
                           <span className="text-[11px] opacity-60 ml-1">
@@ -121,9 +126,7 @@ export default function MessageBubble({
                             minute: "2-digit",
                           })}
                         </span>
-
                       </div>
-
                     </div>
                   )}
                 </>
